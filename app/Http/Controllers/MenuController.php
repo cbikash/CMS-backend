@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class MenuController extends Controller
 {
@@ -12,39 +16,27 @@ class MenuController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('menus/menus', [
+            'menus' => Menu::all()
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'name' => 'required',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Menu $menu)
-    {
-        //
-    }
+        Menu::create([
+            'name' => $request->get('name'),
+            'url' => Str::slug($request->get('name'))
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Menu $menu)
-    {
-        //
+        return Redirect::route('menus.index')->with('success', 'Menu created successfully.');
     }
 
     /**
@@ -52,7 +44,16 @@ class MenuController extends Controller
      */
     public function update(Request $request, Menu $menu)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+        ]);
+
+        $menu->update([
+            'name' => $request->get('name'),
+            'url' => Str::slug($request->get('name'))
+        ]);
+
+        return Redirect::route('menus.index')->with('success', 'Menu updated successfully.');
     }
 
     /**
@@ -60,6 +61,8 @@ class MenuController extends Controller
      */
     public function destroy(Menu $menu)
     {
-        //
+        $menu->delete();
+
+        return Redirect::route('menus.index')->with('success', 'Menu deleted successfully.');
     }
 }

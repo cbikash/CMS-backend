@@ -1,9 +1,13 @@
 import '../css/app.css';
+import 'primereact/resources/themes/lara-light-blue/theme.css';  // or another theme
+import 'primereact/resources/primereact.min.css';                // core styles
+import 'primeicons/primeicons.css';                                // utility CSS (optional)
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import { PrimeReactProvider } from 'primereact/api';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -12,8 +16,9 @@ createInertiaApp({
     resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
     setup({ el, App, props }) {
         const root = createRoot(el);
+        const App1 = <PrimeReactProvider><App {...props} /> </PrimeReactProvider>
 
-        root.render(<App {...props} />);
+        root.render(App1);
     },
     progress: {
         color: '#4B5563',
