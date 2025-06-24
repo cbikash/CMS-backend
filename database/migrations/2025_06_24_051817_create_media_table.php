@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('path')->nullable();
+            $table->string('type')->nullable();
+            $table->unsignedBigInteger('uploaded_by')->nullable();
+            $table->foreign('uploaded_by')->references('id')->on('users');
             $table->timestamps();
         });
     }

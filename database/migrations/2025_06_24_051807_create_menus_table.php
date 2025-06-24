@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('url');
+            $table->integer('order')->default(0);
+            $table->boolean('parent_id')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

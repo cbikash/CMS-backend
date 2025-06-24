@@ -13,6 +13,17 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->longText('body');
+            $table->enum('status', ['published', 'draft', 'create'])->default('create');
+            $table->text('keywords')->nullable();
+            $table->text('seo')->nullable();
+            $table->dateTime('published_at')->nullable();
+            $table->foreignId('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('published_by')->references('id')->on('users')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
