@@ -16,8 +16,12 @@ class MenuController extends Controller
      */
     public function index()
     {
+        $menus = Menu::query()
+            ->where('organization_id', auth()->user()->organization_id)
+            ->get();
+
         return Inertia::render('menus/menus', [
-            'menus' => Menu::all()
+            'menus' => $menus
         ]);
     }
 
@@ -33,7 +37,8 @@ class MenuController extends Controller
 
         Menu::create([
             'name' => $request->get('name'),
-            'url' => Str::slug($request->get('name'))
+            'url' => Str::slug($request->get('name')),
+            'organization_id' => auth()->user()->organization_id,
         ]);
 
         return Redirect::route('menus.index')->with('success', 'Menu created successfully.');
@@ -44,6 +49,10 @@ class MenuController extends Controller
      */
     public function update(Request $request, Menu $menu)
     {
+        if($this->validateOrganization($menu->organization_id)) {
+            return Redirect::route('menus.index')->with('error', 'Sorry, you cannot edit yourself.');
+        }
+
         $request->validate([
             'name' => 'required',
         ]);
@@ -61,6 +70,10 @@ class MenuController extends Controller
      */
     public function destroy(Menu $menu)
     {
+        if($this->validateOrganization($menu->organization_id)) {
+            return Redirect::route('menus.index')->with('error', 'Sorry, you cannot edit yourself.');
+        }
+
         $menu->delete();
 
         return Redirect::route('menus.index')->with('success', 'Menu deleted successfully.');

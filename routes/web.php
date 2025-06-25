@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('posts', PostController::class);
     Route::resource('menus', MenuController::class);
+    Route::resource('faqs', FaqController::class);
 });
 
 require __DIR__.'/settings.php';

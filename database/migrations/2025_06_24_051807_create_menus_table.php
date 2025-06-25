@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('order')->default(0);
             $table->boolean('parent_id')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->foreignId('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->timestamps();
         });
     }

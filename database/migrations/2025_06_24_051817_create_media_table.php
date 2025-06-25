@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->unsignedBigInteger('uploaded_by')->nullable();
             $table->foreign('uploaded_by')->references('id')->on('users');
+            $table->foreignId('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->timestamps();
         });
     }
