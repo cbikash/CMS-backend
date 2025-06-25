@@ -14,20 +14,13 @@ class FaqController extends Controller
      */
     public function index()
     {
-        $faqs = Faq::all();
+        $faqs = Faq::query()->where('organization_id', auth()->user()->organization_id)->get();
 
-        return Inertia::render('Faq/Index', [
+        return Inertia::render('faqs/index', [
             'faqs' => $faqs
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -45,24 +38,9 @@ class FaqController extends Controller
             'organization_id' => auth()->user()->organization_id
         ]);
 
-        return Redirect::route('faq.index');
+        return Redirect::route('faqs.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Faq $faq)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Faq $faq)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -86,7 +64,7 @@ class FaqController extends Controller
        $faq->save();
 
 
-        return Redirect::route('faq.index');
+        return Redirect::route('faqs.index');
     }
 
     /**
@@ -103,6 +81,6 @@ class FaqController extends Controller
 
         $faq->delete();
 
-        return Redirect::route('faq.index');
+        return Redirect::route('faqs.index');
     }
 }
