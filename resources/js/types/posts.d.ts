@@ -16,3 +16,21 @@ export interface Post {
     organization_id: string;
     deleted_at: string;
 }
+
+
+export interface Message {
+    id: number; // bigint unsigned
+    name: string;
+    email: string;
+    phone?: string | null;
+    title: string;
+    body?: string | null;
+    status: 'unread' | 'read';
+    organization_id: number; // bigint unsigned
+    custom_field1?: string | null;
+    custom_field2?: string | null;
+    custom_field3?: string | null;
+    custom_field4?: string | null;
+    created_at: string; // or Date if using Date objects
+    updated_at: string; // or Date if using Date objects
+}

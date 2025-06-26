@@ -39,12 +39,14 @@ class MessageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Message $message)
+    public function update(Message $message): \Illuminate\Http\JsonResponse
     {
         $message->update([
             'status' => 'read'
         ]);
 
-        return Redirect::route('messages.index');
+        return response()->json([
+            'message' => 'successfully updated message'
+        ]);
     }
 }

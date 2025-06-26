@@ -2,11 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\ImageUploaderService;
 use App\Models\Media;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Intervention\Image\ImageManager;
+
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+
 
 class MediaController extends Controller
 {
+    public function __construct(private readonly ImageUploaderService $imageUploader)
+    {
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -26,9 +36,16 @@ class MediaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $uploadedFile = $request->file('image');
+
+        $path = $this->imageUploader->uploadAndConvertToWebp($uploadedFile);
+
+        return response()->json([
+            'message' => 'Image converted and saved successfully.',
+            'file' => 'uploads/' . $path
+        ]);
     }
 
     /**
