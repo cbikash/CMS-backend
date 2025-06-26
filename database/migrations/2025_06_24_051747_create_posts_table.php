@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->longText('body');
+            $table->string('image')->nullable();
             $table->enum('status', ['published', 'draft', 'create'])->default('create');
             $table->text('keywords')->nullable();
             $table->text('seo')->nullable();
@@ -24,6 +25,11 @@ return new class extends Migration
             $table->foreignId('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('published_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('organization_id')->references('id')->on('organizations')->onDelete('cascade');
+            $table->string('custom_field1')->nullable();
+            $table->string('custom_field2')->nullable();
+            $table->string('custom_field3')->nullable();
+            $table->text('custom_field4')->nullable();
+            $table->foreignId('menu_id')->references('id')->on('menus')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class PostController extends Controller
 {
@@ -12,7 +14,15 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::query()
+            ->where('organization_id', auth()->user()->organization_id)
+            ->orderBy('id', 'desc')
+            ->get()
+        ;
+
+        return Inertia::render('posts/index', [
+            'posts' => $posts,
+        ]);
     }
 
     /**
@@ -20,7 +30,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('posts/create');
     }
 
     /**
@@ -28,7 +38,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -36,23 +46,20 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        if($this->validateOrganization($post->id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Post $post)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Post $post)
     {
-        //
+        if($this->validateOrganization($post->id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
     }
 
     /**
@@ -60,6 +67,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        if($this->validateOrganization($post->id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
     }
 }

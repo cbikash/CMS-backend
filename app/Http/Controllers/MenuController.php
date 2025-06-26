@@ -18,6 +18,7 @@ class MenuController extends Controller
     {
         $menus = Menu::query()
             ->where('organization_id', auth()->user()->organization_id)
+            ->orderByDesc('id')
             ->get();
 
         return Inertia::render('menus/menus', [
@@ -77,5 +78,27 @@ class MenuController extends Controller
         $menu->delete();
 
         return Redirect::route('menus.index')->with('success', 'Menu deleted successfully.');
+    }
+
+    public function getPosts(Request $request): \Inertia\Response
+    {
+        $menus = Menu::query()
+            ->where('organization_id', auth()->user()->organization_id)
+            ->with('posts')
+            ->orderByDesc('id')
+            ->get();
+
+        return Inertia::render('menus/posts', [
+            'menus' => $menus,
+        ]);
+    }
+
+    public function getPages(Request $request, Menu $menu): \Inertia\Response
+    {
+        $menus = $menu->page()->get();
+
+        return Inertia::render('menus/posts', [
+            'menu' => $menus,
+        ]);
     }
 }

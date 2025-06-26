@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class SettingController extends Controller
 {
@@ -12,7 +14,14 @@ class SettingController extends Controller
      */
     public function index()
     {
+        $settings = Setting::query()
+            ->where('organization_id', auth()->user()->organization_id)
+            ->orderByDesc('id')
+            ->get();
 
+        return Inertia::render('settings/index', [
+            'settings' => $settings,
+        ]);
     }
 
     /**
@@ -28,7 +37,7 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -52,7 +61,9 @@ class SettingController extends Controller
      */
     public function update(Request $request, Setting $setting)
     {
-        //
+        if($this->validateOrganization($setting->id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
     }
 
     /**
@@ -60,6 +71,10 @@ class SettingController extends Controller
      */
     public function destroy(Setting $setting)
     {
-        //
+        if($this->validateOrganization($setting->id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
+
+
     }
 }

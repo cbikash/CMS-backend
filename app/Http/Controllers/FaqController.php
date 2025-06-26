@@ -14,7 +14,9 @@ class FaqController extends Controller
      */
     public function index()
     {
-        $faqs = Faq::query()->where('organization_id', auth()->user()->organization_id)->get();
+        $faqs = Faq::query()
+            ->where('organization_id', auth()->user()->organization_id)
+            ->get();
 
         return Inertia::render('faqs/index', [
             'faqs' => $faqs

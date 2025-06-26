@@ -20,6 +20,10 @@ return new class extends Migration
             $table->text('body')->nullable();
             $table->enum('status', ['unread', 'read'])->default('unread');
             $table->foreignId('organization_id')->references('id')->on('organizations')->onDelete('cascade');
+            $table->string('custom_field1')->nullable();
+            $table->string('custom_field2')->nullable();
+            $table->string('custom_field3')->nullable();
+            $table->text('custom_field4')->nullable();
             $table->timestamps();
         });
     }

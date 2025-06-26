@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class PageController extends Controller
 {
@@ -12,15 +14,14 @@ class PageController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $pages = Page::query()
+            ->where('organization_id', auth()->user()->organization_id)
+            ->orderByDesc('id')
+            ->get();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return Inertia::render('pages/index', [
+            'pages' => $pages
+        ]);
     }
 
     /**
@@ -28,7 +29,7 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -36,15 +37,13 @@ class PageController extends Controller
      */
     public function show(Page $page)
     {
-        //
-    }
+        if($this->validateOrganization($page->organization_id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Page $page)
-    {
-        //
+        return Inertia::render('pages/show', [
+            'page' => $page
+        ]);
     }
 
     /**
@@ -52,7 +51,9 @@ class PageController extends Controller
      */
     public function update(Request $request, Page $page)
     {
-        //
+        if($this->validateOrganization($page->organization_id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
     }
 
     /**
@@ -60,6 +61,8 @@ class PageController extends Controller
      */
     public function destroy(Page $page)
     {
-        //
+        if($this->validateOrganization($page->organization_id)) {
+            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
+        }
     }
 }

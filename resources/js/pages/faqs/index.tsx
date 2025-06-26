@@ -2,13 +2,11 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import {Menu } from '@/types/menus';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import { format } from 'date-fns';
 import { FAQ } from '@/types/faq';
 import { InputTextarea } from 'primereact/inputtextarea';
 
