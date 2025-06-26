@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 
@@ -22,19 +23,36 @@ class ImageUploaderService
      * @param UploadedFile $file
      * @param string $directory Relative directory inside the disk, e.g. 'uploads'
      * @param string $disk Storage disk name (default 'public')
+     * @param bool $quality
+     * @param int|null $width
+     * @param int|null $height
      * @return string Saved file path relative to disk root, e.g. 'uploads/filename.webp'
      */
-    public function uploadAndConvertToWebp(UploadedFile $file, string $directory = 'uploads', string $disk = 'public'): string
+    public function uploadAndConvertToWebp(
+        UploadedFile $file,
+        string $directory = 'uploads',
+        string $disk = 'public',
+        bool $quality = true,
+        ?int $width = null,
+        ?int $height = null
+    ): string
     {
         $originalSize = $file->getSize();
 
-        $quality = $this->determineQuality($originalSize);
+        $imgQuality = $this->determineQuality($originalSize);
 
         $image = $this->imageManager->read($file);
 
-        $webpImage = $image->toWebp($quality);
+        if ($width !== null || $height !== null) {
+            $image->resize($width, $height);
+        }
 
-        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.webp';
+        $webpImage = $image->toWebp( $quality ? $imgQuality : 100);
+
+        $fileName = 'cms_' .
+            Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '_' .
+            now()->format('Ymd_His') . '_' .
+            Str::random(6) . '.webp';
 
         $path = $directory . '/' . $fileName;
 
