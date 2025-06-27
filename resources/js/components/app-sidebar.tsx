@@ -27,11 +27,6 @@ const mainNavItems: NavItem[] = [
         icon: MenuSquare,
     },
     {
-        title: 'Media',
-        href: '/media',
-        icon: ImageIcon,
-    },
-    {
         title: 'Pages',
         href: '/pages',
         icon: FolderCheckIcon,

@@ -25,7 +25,7 @@ export default function Messages({messages}: {messages: Message[]}) {
     const fnActionGroup = (message: Message) => {
         return (
             <div>
-                <Link href={`/messages/${message.id}`}><EyeIcon /></Link>
+                <Link href={`/messages/${message.id}`}><EyeIcon className={'text-blue-500'} /></Link>
             </div>
         )
     }

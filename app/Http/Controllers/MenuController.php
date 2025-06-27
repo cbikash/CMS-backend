@@ -26,6 +26,18 @@ class MenuController extends Controller
         ]);
     }
 
+    public function menuNames()
+    {
+        $menus = Menu::select('id, name')
+            ->where('organization_id', auth()->user()->organization_id)
+            ->orderByDesc('id')
+            ->get();
+
+        return $this->successResponse([
+            'menus' => $menus
+        ], 'Successfully fetch menus');
+    }
+
 
     /**
      * Store a newly created resource in storage.

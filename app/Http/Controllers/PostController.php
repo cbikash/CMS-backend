@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Menu;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -30,7 +31,14 @@ class PostController extends Controller
      */
     public function create()
     {
-        return Inertia::render('posts/create');
+        $menus = Menu::select('id', 'name')
+            ->where('organization_id', auth()->user()->organization_id)
+            ->orderByDesc('id')
+            ->get();
+
+        return Inertia::render('posts/create', [
+            'menus' => $menus,
+        ]);
     }
 
     /**

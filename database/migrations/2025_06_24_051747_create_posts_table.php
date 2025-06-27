@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->longText('body');
             $table->string('image')->nullable();
-            $table->enum('status', ['published', 'draft', 'create'])->default('create');
+            $table->enum('status', ['published', 'draft', 'create.tsx'])->default('create.tsx');
             $table->text('keywords')->nullable();
             $table->text('seo')->nullable();
             $table->dateTime('published_at')->nullable();

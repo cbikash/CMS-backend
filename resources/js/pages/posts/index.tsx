@@ -1,0 +1,75 @@
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { Post } from '@/types/posts';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { format } from 'date-fns';
+import { EyeIcon } from 'lucide-react';
+import { Badge } from 'primereact/badge';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Menu } from '@/types/menus';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Posts',
+        href: '/posts',
+    },
+];
+
+
+export default function Posts({posts}: {posts: Post[]}) {
+
+    const [menus, setMenus] = useState<Menu[]>([]);
+
+    useEffect(() => {
+        fnFetchMenus()
+    }, []);
+
+    const fnFetchMenus = () => {
+        axios.get('/ajax/menuNames').then(res => setMenus(res.data.data.menus));
+    }
+
+    const dateFormat = (date : string) => {
+        const formatted = format(date, 'yyyy-MM-dd HH:mm:ss'); // "2025-06-24 16:15:30"
+        return <p>{formatted}</p>;
+    }
+
+    const fnActionGroup = (post: Post) => {
+        return (
+            <div>
+                <Link href={`/messages/${post.id}`}><EyeIcon /></Link>
+            </div>
+        )
+    }
+
+    const rnStatus = (status: string) => {
+        return (
+            <Badge value={`${status}`} severity={status == 'read' ? 'success' : 'danger'}></Badge>
+        )
+    }
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Messages" />
+            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
+                <div className={''}>
+                    <Link href={'/posts/create'} className={''}>Post +</Link>
+                </div>
+                <div className="">
+                    <DataTable value={posts} tableStyle={{ minWidth: '50rem' }}>
+                        <Column field="name" header="Name" sortable style={{ width: '25%' }}></Column>
+                        <Column field="email" header="Email" sortable style={{ width: '25%' }}></Column>
+                        <Column field="title" header="Subject" sortable style={{ width: '25%' }}></Column>
+                        <Column field="status" body={(field) => rnStatus(field.status)} header="Status" sortable style={{ width: '25%' }}></Column>
+                        <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt" sortable style={{ width: '25%' }}></Column>
+                        <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated" sortable style={{ width: '25%' }}></Column>
+                        <Column body={fnActionGroup} header="Action" style={{ width: '25%' }}></Column>
+                    </DataTable>
+                </div>
+            </div>
+
+        </AppLayout>
+    );
+}
