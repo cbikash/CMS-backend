@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Requests\Api;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class SubscriptionRequest extends FormRequest
+{
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => 'required|string|email|max:255|unique:subscribers',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'Email is already subscribed.',
+        ];
+    }
+}

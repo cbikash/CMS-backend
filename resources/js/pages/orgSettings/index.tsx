@@ -13,14 +13,13 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-
 interface Subscriber{
     email: string,
     created_at: string,
     status: string,
 }
 
-export default function Menus({settings}: {settings: Subscriber[]}) {
+export default function Menus({subscribers}: {subscribers: Subscriber[]}) {
     const dateFormat = (date : string) => {
         const formatted = format(date, 'yyyy-MM-dd HH:mm:ss'); // "2025-06-24 16:15:30"
         return <p>{formatted}</p>;

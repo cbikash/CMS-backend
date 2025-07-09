@@ -1,4 +1,4 @@
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
@@ -16,6 +16,25 @@ const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Profile settings',
         href: '/settings/profile',
+    },
+];
+
+
+const sidebarNavItems: NavItem[] = [
+    {
+        title: 'Profile',
+        href: '/settings/profile',
+        icon: null,
+    },
+    {
+        title: 'Password',
+        href: '/settings/password',
+        icon: null,
+    },
+    {
+        title: 'Appearance',
+        href: '/settings/appearance',
+        icon: null,
     },
 ];
 
@@ -44,7 +63,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
 
-            <SettingsLayout>
+            <SettingsLayout sidebarNavItems={sidebarNavItems}>
                 <div className="space-y-6">
                     <HeadingSmall title="Profile information" description="Update your name and email address" />
 
@@ -119,8 +138,6 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
                     </form>
                 </div>
-
-                <DeleteUser />
             </SettingsLayout>
         </AppLayout>
     );

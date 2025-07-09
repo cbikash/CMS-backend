@@ -24,7 +24,7 @@ class PublicTokenVerificationMiddeware
         }
 
         $token = Token::where('secret', $tokenString)
-            ->where('expire_at', '>', now())
+            ->where('expires_at', '>', now())
             ->first();
 
         if (!$token) {
@@ -32,7 +32,7 @@ class PublicTokenVerificationMiddeware
         }
 
         // Add organizationId to the request headers for downstream usage
-        $request->headers->set('organizationId', $token->organizationId); // fixed typo
+        $request->headers->set('organization_id', $token->organization_id);
 
         return $next($request);
     }

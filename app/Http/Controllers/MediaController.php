@@ -24,7 +24,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        //
+        return $this->successResponse([], 'success');
     }
 
     /**

@@ -1,7 +1,7 @@
 import InputError from '@/components/input-error';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type NavItem } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
@@ -15,6 +15,25 @@ const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Password settings',
         href: '/settings/password',
+    },
+];
+
+
+const sidebarNavItems: NavItem[] = [
+    {
+        title: 'Profile',
+        href: '/settings/profile',
+        icon: null,
+    },
+    {
+        title: 'Password',
+        href: '/settings/password',
+        icon: null,
+    },
+    {
+        title: 'Appearance',
+        href: '/settings/appearance',
+        icon: null,
     },
 ];
 
@@ -52,7 +71,7 @@ export default function Password() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Password settings" />
 
-            <SettingsLayout>
+            <SettingsLayout sidebarNavItems={sidebarNavItems}>
                 <div className="space-y-6">
                     <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure" />
 

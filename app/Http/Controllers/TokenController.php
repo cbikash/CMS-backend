@@ -23,7 +23,7 @@ class TokenController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, TokenService $tokenService)
+    public function store(TokenService $tokenService)
     {
          $plainToken = $tokenService->generateToken();
 

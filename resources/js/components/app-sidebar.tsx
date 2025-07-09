@@ -11,7 +11,7 @@ import {
     ImageIcon,
     Folder,
     LayoutGrid,
-    FileQuestionIcon, SubscriptIcon, MessageCircle
+    FileQuestionIcon, SubscriptIcon, MessageCircle, Building
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -55,6 +55,11 @@ const mainNavItems: NavItem[] = [
 ];
 
 const footerNavItems: NavItem[] = [
+    {
+        title: 'Organization',
+        href: '/organization/profile',
+        icon: Building,
+    },
     {
         title: 'Setting',
         href: '/settings',

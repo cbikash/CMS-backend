@@ -8,10 +8,10 @@ use Illuminate\Support\Str;
 
 class TokenService
 {
-    public function generateToken(string $prefix = 'CMS_', bool $disablePrevious = false): string
+    public function generateToken(string $prefix = 'CMS_', bool $disablePrevious = true): string
     {
         $user = auth()->user();
-        $organizationId = $user->organizationId;
+        $organizationId = $user->organization_id;
 
         // Generate unique token
         $uuid = Str::uuid()->toString();
