@@ -17,7 +17,7 @@ class SubscriberController extends Controller
             ->where('organization_id', auth()->user()->organization_id)
             ->get();
 
-        return Inertia::render('subscriber/index', [
+        return Inertia::render('orgSettings/index', [
             'subscribers' => $subscribers
         ]);
     }

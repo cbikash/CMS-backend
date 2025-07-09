@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('templates', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
-            $table->text('parent_id');
-            $table->foreignId('organization_id')->references('id')->on('organizations')->onDelete('cascade');
+            $table->string('image')->nullable();
+            $table->enum('status', ['0', '1'])->default('0')->comment('0: inactive, 1: active');
+            $table->boolean('is_default')->default(false);
+            $table->foreignId('organization_id')->references('id')->on('organizations');
+
             $table->timestamps();
         });
     }
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('templates');
     }
 };

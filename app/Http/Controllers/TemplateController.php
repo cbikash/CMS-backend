@@ -2,26 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
+use App\Models\Template;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
-class SettingController extends Controller
+class TemplateController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $settings = Setting::query()
+        $templates = Template::query()
             ->where('organization_id', auth()->user()->organization_id)
-            ->orderByDesc('id')
-            ->get();
+            ->get()
+        ;
 
-        return Inertia::render('orgSettings/index', [
-            'settings' => $settings,
+        return Inertia::render('Templates/Index', [
+            'templates' => $templates
         ]);
+
     }
 
     /**
@@ -37,13 +37,13 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Setting $setting)
+    public function show(Template $template)
     {
         //
     }
@@ -51,7 +51,7 @@ class SettingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Setting $setting)
+    public function edit(Template $template)
     {
         //
     }
@@ -59,22 +59,16 @@ class SettingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Setting $setting)
+    public function update(Request $request, Template $template)
     {
-        if($this->validateOrganization($setting->id)) {
-            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
-        }
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Setting $setting)
+    public function destroy(Template $template)
     {
-        if($this->validateOrganization($setting->id)) {
-            return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
-        }
-
-
+        //
     }
 }

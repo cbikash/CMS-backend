@@ -10,6 +10,7 @@ import { Badge } from 'primereact/badge';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Menu } from '@/types/menus';
+import { Button } from 'primereact/button';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -54,8 +55,12 @@ export default function Posts({posts}: {posts: Post[]}) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Messages" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className={''}>
-                    <Link href={'/posts/create'} className={''}>Post +</Link>
+                <div className=''>
+                    <Link href="/posts/create">
+                        <a className="p-button p-component">
+                            <span className="p-button-label">Post +</span>
+                        </a>
+                    </Link>
                 </div>
                 <div className="">
                     <DataTable value={posts} tableStyle={{ minWidth: '50rem' }}>

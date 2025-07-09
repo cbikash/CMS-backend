@@ -11,6 +11,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { Tag } from 'primereact/tag';
 import { type BreadcrumbItem } from '@/types';
 import { Menu } from '@/types/menus';
+import { Post } from '@/types/posts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
@@ -22,6 +23,9 @@ export default function Posts({ menus }: { menus: Menu }) {
     const [totalSize, setTotalSize] = useState(0);
     const toast = useRef<Toast>(null);
     const fileUploadRef = useRef<FileUpload>(null);
+    const [post, setPost] = useState<Post >({
+
+    });
 
     const customBase64Uploader = async (event) => {
         // convert file to base64 encoded
@@ -157,6 +161,11 @@ export default function Posts({ menus }: { menus: Menu }) {
                             <InputText id="keywords" aria-describedby="keywords-help" />
                         </div>
                     </div>
+
+                    <div className={'mt-4'}>
+                        <Button type={'submit'} >Add Post</Button>
+                    </div>
+
                 </form>
             </div>
         </AppLayout>
