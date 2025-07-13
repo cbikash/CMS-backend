@@ -21,14 +21,14 @@ class PostController extends Controller
         ]);
     }
 
-    public function details($slug, Request $request)
+    public function show($slug, Request $request)
     {
         $organization_id = $request->header('organization_id');
 
         $post = Post::where('slug', $slug)
             ->where('organization_id', $organization_id)
             ->with('images')
-            ->get();
+            ->first();
 
         return $this->successResponse([
             'post' => $post
