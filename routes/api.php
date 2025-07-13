@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\v1\MessageController;
+use App\Http\Controllers\Api\v1\PostController;
 use App\Http\Controllers\Api\v1\SubscriptionController;
 use App\Http\Controllers\Api\v1\FaqController;
 use Illuminate\Http\Request;
@@ -14,4 +15,6 @@ Route::middleware('client.auth')->group(function () {
     Route::post('messages', MessageController::class);
     Route::post('subscribe', SubscriptionController::class);
     Route::get('/faqs', FaqController::class);
+    Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/posts/{slug}', [PostController::class, 'show']);
 });
