@@ -15,21 +15,22 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->longText('body');
+            $table->longText('body')->nullable();
             $table->string('image')->nullable();
-            $table->enum('status', ['published', 'draft', 'create.tsx'])->default('create.tsx');
+            $table->enum('status', ['published', 'draft', 'create'])->default('create');
             $table->text('keywords')->nullable();
             $table->text('seo')->nullable();
             $table->dateTime('published_at')->nullable();
             $table->foreignId('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('updated_by')->references('id')->on('users')->onDelete('cascade');
-            $table->foreignId('published_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('published_by')->nullable()->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->string('custom_field1')->nullable();
             $table->string('custom_field2')->nullable();
             $table->string('custom_field3')->nullable();
             $table->text('custom_field4')->nullable();
-            $table->foreignId('menu_id')->references('id')->on('menus')->onDelete('cascade');
+            $table->foreignId('menu_id')->nullable()
+                ->references('id')->on('menus')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

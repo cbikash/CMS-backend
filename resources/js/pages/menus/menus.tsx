@@ -97,7 +97,6 @@ export default function Menus({menus}: {menus: Menu[]}) {
                         <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt" sortable style={{ width: '25%' }}></Column>
                         <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated" sortable style={{ width: '25%' }}></Column>
                         <Column body={actionGroup} header="Action" style={{ width: '25%' }}></Column>
-
                     </DataTable>
                 </div>
             </div>

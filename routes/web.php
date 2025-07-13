@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrganizationController;
@@ -28,6 +29,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('messages/{message}/status', [MessageController::class, 'update'])->name('messages.status');
     Route::get('organization/profile', [OrganizationController::class, 'show']);
     Route::get('organization/token', [OrganizationController::class, 'token']);
+});
+
+Route::middleware(['auth', 'verified'])->prefix('ajax')->group(function () {
+    Route::delete('/posts/{post}/{image}/remove', [ImageController::class, 'removeImage'])->name('images.remove');
+    Route::post('/posts/{post}/images/uploads', [ImageController::class, 'uploadsImages'])->name('images.uploads');
+    Route::put('/posts/{post}/status', [PostController::class, 'updateStatus'])->name('post.update.status');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('ajax')->group(function () {

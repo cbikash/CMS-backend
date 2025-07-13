@@ -1,3 +1,9 @@
+
+export interface Image {
+    id: number,
+    name: string
+}
+
 export interface Post {
     id?: string;
     title: string;
@@ -15,8 +21,8 @@ export interface Post {
     published_by?: string;
     organization_id?: string;
     deleted_at?: string;
+    images? : Image[]
 }
-
 
 export interface Message {
     id: number; // bigint unsigned

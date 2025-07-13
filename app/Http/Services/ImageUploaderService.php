@@ -58,7 +58,7 @@ class ImageUploaderService
 
         Storage::disk($disk)->put($path, (string) $webpImage);
 
-        return $path;
+        return $fileName;
     }
 
     protected function determineQuality(int $sizeBytes): int

@@ -38,6 +38,12 @@ class MenuController extends Controller
         ], 'Successfully fetch menus');
     }
 
+    public function show(Menu $menu)
+    {
+
+
+    }
+
 
     /**
      * Store a newly created resource in storage.
