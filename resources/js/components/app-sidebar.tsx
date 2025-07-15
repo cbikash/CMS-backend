@@ -8,10 +8,9 @@ import {
     MenuSquare,
     FolderCheckIcon,
     AirVentIcon,
-    ImageIcon,
     Folder,
     LayoutGrid,
-    FileQuestionIcon, SubscriptIcon, MessageCircle, Building
+    FileQuestionIcon, SubscriptIcon, MessageCircle, Building, Columns3, DiamondPercent, BookUser
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -27,14 +26,14 @@ const mainNavItems: NavItem[] = [
         icon: MenuSquare,
     },
     {
-        title: 'Pages',
-        href: '/pages',
-        icon: FolderCheckIcon,
-    },
-    {
         title: 'Posts',
         href: '/posts',
         icon: AirVentIcon,
+    },
+    {
+        title: 'Contacts',
+        href: '/contacts',
+        icon: BookUser,
     },
     {
         title: 'FAQs',
@@ -50,6 +49,16 @@ const mainNavItems: NavItem[] = [
         title: 'Messages',
         href: '/messages',
         icon: MessageCircle,
+    },
+    {
+        title: 'Sliders',
+        href: '/sliders',
+        icon: Columns3,
+    },
+    {
+        title: 'Testimonials',
+        href: '/testimonials',
+        icon: DiamondPercent,
     },
 
 ];

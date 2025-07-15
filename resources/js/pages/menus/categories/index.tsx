@@ -1,8 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import {Menu } from '@/types/menus';
+import {Menu, Category } from '@/types/menus';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -10,21 +10,24 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { format } from 'date-fns';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Menus',
-        href: '/menus',
-    },
-];
-
-export default function Menus({menus}: {menus: Menu[]}) {
+export default function MenusCategories({menu, categories}: {menu: Menu, categories: Category[]}) {
     const [isOpen, setIsOpen] = useState(false)
     const [isOpenDeleteModel, setIsOpenDeleteModel] = useState(false)
     const [name, setName] = useState<string>('');
-    const [menu, setMenu] = useState<Menu | null>(null)
+    const [category, setCategory] = useState<Category | null>(null)
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Menus',
+            href: '/menus',
+        },
+        {
+            title: `${menu.name} Categories`,
+            href: '/menus/categories',
+        },
+    ];
     const fnCreateMenu = () => {
-        router.post('/menus', {
+        router.post(`/menus/${menu.id}/categories`, {
             name: name,
         }, {
             onSuccess: () => {
@@ -34,22 +37,22 @@ export default function Menus({menus}: {menus: Menu[]}) {
     }
 
     const fnUpdateMenu = () => {
-        router.put(`/menus/${menu?.id}`, {
+        router.put(`/menus/${menu?.id}/categories/${category?.id}`, {
             name: name,
         }, {
             onSuccess: () => {
                 setIsOpen(false)
-                setMenu(null)
+                setCategory(null)
                 setName('')
             }
         })
     }
 
     const fnDeleteMenu = () => {
-        router.delete(`/menus/${menu?.id}`, {
+        router.delete(`/menus/${menu?.id}/categories/${category?.id}`, {
             onSuccess: () => {
                 setIsOpenDeleteModel(false)
-                setMenu(null)
+                setCategory(null)
             }
         })
     }
@@ -61,46 +64,36 @@ export default function Menus({menus}: {menus: Menu[]}) {
 
     const actionGroup = (field: any) => {
         const updateM = () => {
-            setMenu(field)
+            setCategory(field)
             setName(field.name)
             setIsOpen(true)
         }
 
         const deleteModel = () => {
-            setMenu(field)
+            setCategory(field)
             setIsOpenDeleteModel(true)
         }
 
         return (<>
             <div className={'flex gap-2'}>
-                <Button severity="warning" icon="pi pi-chart-bar" onClick={() => router.get(`/menus/${field.id}/categories`)}></Button>
                 <Button size={'small'} severity="info" icon="pi pi-pencil" onClick={updateM} />
                 <Button size={'small'} severity="danger" icon="pi pi-trash" onClick={deleteModel} />
             </div>
         </>)
     }
 
-    const fnName = (field: any) => {
-        return (
-            <div className={'flex gap-2'}>
-                <Link className={'text-blue-400'} href={`/menus/${field.id}/posts`}>{field.name}</Link>
-            </div>
-        )
-    }
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title={`${menu.name} Categories`} />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
                 <div className="">
                     <div className="flex justify-end">
-                        <Button size={'small'} onClick={() => setIsOpen(true)}>Menu +</Button>
+                        <Button size={'small'} onClick={() => setIsOpen(true)}>Category +</Button>
                     </div>
                 </div>
                 <div className="">
-                    <DataTable value={menus} tableStyle={{ minWidth: '50rem' }}>
-                        <Column field="name" body={fnName} header="Name" sortable style={{ width: '25%' }}></Column>
-                        <Column field="url" header="URL" sortable style={{ width: '25%' }}></Column>
+                    <DataTable value={categories} tableStyle={{ minWidth: '50rem' }}>
+                        <Column field="name" header="Name" sortable style={{ width: '25%' }}></Column>
                         <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt" sortable style={{ width: '25%' }}></Column>
                         <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated" sortable style={{ width: '25%' }}></Column>
                         <Column body={actionGroup} header="Action" style={{ width: '25%' }}></Column>
@@ -109,7 +102,7 @@ export default function Menus({menus}: {menus: Menu[]}) {
             </div>
 
             <div className="card flex justify-content-center">
-                <Dialog header="Create Menu" visible={isOpen} style={{ width: '50vw' }} onHide={() => {
+                <Dialog header={`Create ${menu.name} Category`} visible={isOpen} style={{ width: '50vw' }} onHide={() => {
                     if (!isOpen) return;
                     setIsOpen(false);
                 }}>
@@ -125,21 +118,18 @@ export default function Menus({menus}: {menus: Menu[]}) {
 
                     <div className="flex justify-start gap-4 items-start">
                         <Button size={'small'} severity="danger" onClick={() => setIsOpen(false)}>Cancel</Button>
-                        <Button size={'small'} onClick={() => menu?.id ? fnUpdateMenu() : fnCreateMenu()}>Save</Button>
+                        <Button size={'small'} onClick={() => category?.id ? fnUpdateMenu() : fnCreateMenu()}>Save</Button>
                     </div>
                 </Dialog>
 
-                <Dialog header="Delete Menu" visible={isOpenDeleteModel} style={{ width: '20vw' }} onHide={() => {
-                    if (!isOpenDeleteModel) return;
-                    setIsOpen(false);
-                }}>
+                <Dialog header="Delete Category" visible={isOpenDeleteModel} style={{ width: '40vw' }} onHide={() => setIsOpen(false)} >
                     <div className={'flex flex-col gap-4'}>
                         <div className="w-full mb-4">
-                            <p>Are you sure you want to delete menu?</p>
+                            <p>Are you sure you want to delete Category?</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-start gap-4 items-start">
+                    <div className="flex justify-end gap-4 items-start">
                         <Button size={'small'} onClick={() => setIsOpenDeleteModel(false)}>Cancel</Button>
                         <Button size={'small'} severity="danger" onClick={() => fnDeleteMenu()}>Save</Button>
                     </div>

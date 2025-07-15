@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Menu;
+use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -42,6 +44,52 @@ class MenuController extends Controller
     {
 
 
+    }
+
+    public function categories(Menu $menu)
+    {
+        $categories = Category::query()
+            ->where('menu_id', $menu->id)
+            ->get();
+
+        return Inertia::render('menus/categories/index', [
+            'menu' => $menu,
+            'categories' => $categories
+        ]);
+    }
+
+    public function createCategory(Menu $menu)
+    {
+        $validate = request()->validate([
+            'name' => 'required',
+        ]);
+
+        Category::query()->create([
+            'name' =>   $validate['name'],
+            'menu_id' => $menu->id,
+            'organization_id' => auth()->user()->organization_id,
+        ]);
+
+        return \redirect()->back()->with('success', 'Category created');
+    }
+
+    public function updateCategory(Menu $menu, Category $category)
+    {
+        $validate = request()->validate([
+            'name' => 'required',
+        ]);
+
+        $category->update([
+            'name' =>   $validate['name']
+        ]);
+
+        return \redirect()->back()->with('success', 'Category created');
+    }
+
+    public function deleteCategory(Menu $menu, Category $category)
+    {
+        $category->delete();
+        return \redirect()->back()->with('success', 'Category deleted');
     }
 
 
@@ -98,16 +146,15 @@ class MenuController extends Controller
         return Redirect::route('menus.index')->with('success', 'Menu deleted successfully.');
     }
 
-    public function getPosts(Request $request): \Inertia\Response
+    public function getPosts(Menu $menu, Request $request): \Inertia\Response
     {
-        $menus = Menu::query()
-            ->where('organization_id', auth()->user()->organization_id)
-            ->with('posts')
-            ->orderByDesc('id')
+        $posts = Post::query()
+            ->where('menu_id', $menu->id)
             ->get();
 
-        return Inertia::render('menus/posts', [
-            'menus' => $menus,
+        return Inertia::render('menus/posts/index', [
+            'menu' => $menu,
+            'posts' => $posts
         ]);
     }
 

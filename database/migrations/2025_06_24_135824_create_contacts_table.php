@@ -13,10 +13,19 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
+            $table->string('image')->nullable();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('phone');
-            $table->string('address');
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->string('designation')->nullable();
+            $table->text('description')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('youtube')->nullable();
+
             $table->foreignId('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->timestamps();
         });

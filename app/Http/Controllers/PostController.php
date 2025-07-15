@@ -80,6 +80,7 @@ class PostController extends Controller
             'image' => $validated['image'] ?? null,
             'slug' => $validated['slug'],
             'seo' => $validated['seo'],
+            'menu_id' => $validated['menu_id'],
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
             'published_by' => auth()->id(),
@@ -168,6 +169,7 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'body' => 'required|string',
             'keywords' => 'nullable|string',
+            'menu_id' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp', // 2MB max
         ]);
 

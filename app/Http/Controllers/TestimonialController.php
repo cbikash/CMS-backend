@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Services\ImageUploaderService;
-use App\Models\Contact;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ContactController extends Controller
+class TestimonialController extends Controller
 {
     public function __construct(private readonly ImageUploaderService $imageUploader)
     {
@@ -18,12 +18,12 @@ class ContactController extends Controller
      */
     public function index()
     {
-        $contacts = Contact::orderBy('id', 'desc')
+        $testimonials = Testimonial::orderBy('id', 'desc')
             ->where('organization_id', auth()->user()->organization_id)
             ->get();
 
-        return Inertia::render('contacts/index', [
-            'contacts' => $contacts
+        return Inertia::render('testimonials/index', [
+            'testimonials' => $testimonials
         ]);
     }
 
@@ -32,7 +32,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-        return Inertia::render('contacts/create');
+        return Inertia::render('Testimonials/Create');
     }
 
     /**
@@ -42,16 +42,9 @@ class ContactController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'facebook' => 'nullable|string|max:255',
-            'twitter' => 'nullable|string|max:255',
-            'linkedin' => 'nullable|string|max:255',
-            'instagram' => 'nullable|string|max:255',
-            'youtube' => 'nullable|string|max:255',
+            'source' => 'nullable|string|max:255',
         ]);
 
         if ($request->hasFile('image')) {
@@ -61,28 +54,42 @@ class ContactController extends Controller
 
         $validated['organization_id'] = auth()->user()->organization_id;
 
-        Contact::create($validated);
+        Testimonial::create($validated);
 
-        return redirect()->route('contacts.index')->with('success', 'Contact created successfully.');
+        return redirect()->route('testimonials.index')
+            ->with('success', 'Testimonial created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Testimonial $testimonial)
+    {
+        return Inertia::render('Testimonials/Show', [
+            'testimonial' => $testimonial
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Testimonial $testimonial)
+    {
+        return Inertia::render('Testimonials/Edit', [
+            'testimonial' => $testimonial
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contact $contact)
+    public function update(Request $request, Testimonial $testimonial)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
             'designation' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'facebook' => 'nullable|string|max:255',
-            'twitter' => 'nullable|string|max:255',
-            'linkedin' => 'nullable|string|max:255',
-            'instagram' => 'nullable|string|max:255',
-            'youtube' => 'nullable|string|max:255',
+            'source' => 'nullable|string|max:255',
         ]);
 
         if ($request->hasFile('image')) {
@@ -90,19 +97,20 @@ class ContactController extends Controller
             $validated['image'] = $path;
         }
 
-        $contact->update($validated);
+        $testimonial->update($validated);
 
-        return redirect()->route('contacts.index')->with('success', 'Contact updated successfully.');
+        return redirect()->route('testimonials.index')
+            ->with('success', 'Testimonial updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Contact $contact)
+    public function destroy(Testimonial $testimonial)
     {
+        $testimonial->delete();
 
-        $contact->delete();
-
-        return redirect()->route('contacts.index')->with('success', 'Contact deleted successfully.');
+        return redirect()->route('testimonials.index')
+            ->with('success', 'Testimonial deleted successfully.');
     }
 }

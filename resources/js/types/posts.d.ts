@@ -40,3 +40,29 @@ export interface Message {
     created_at: string; // or Date if using Date objects
     updated_at: string; // or Date if using Date objects
 }
+
+
+export interface Slider {
+    id: number; // bigint unsigned
+    name: string;
+    created_at: string; // or Date if using Date objects
+    updated_at: string; // or Date if using Date objects
+}
+
+export interface Contact {
+    id: number;
+    name: string;
+    image: File | string;
+    email: string | null;
+    phone?: string;
+    address?: string;
+    designation: string;
+    description: string;
+    facebook: string | '';
+    twitter: string | '';
+    linkedin: string | '';
+    instagram: string | '';
+    youtube: string | '';
+    created_at: string; // or Date if using Date objects
+    updated_at: string; // or Date if using Date objects
+}

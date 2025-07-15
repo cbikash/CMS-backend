@@ -8,10 +8,6 @@ use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
-
-use Intervention\Image\Drivers\Gd\Driver as GdDriver;
-
 
 class MediaController extends Controller
 {
@@ -19,6 +15,7 @@ class MediaController extends Controller
     {
 
     }
+
     /**
      * Display a listing of the resource.
      */

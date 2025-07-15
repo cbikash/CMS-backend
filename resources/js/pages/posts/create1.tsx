@@ -6,6 +6,9 @@ import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { Editor } from 'primereact/editor';
 import { useState } from 'react';
+import { Menu } from '@/types/menus';
+import { AutoComplete } from 'primereact/autocomplete';
+import { Dropdown } from 'primereact/dropdown';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
@@ -20,7 +23,7 @@ interface FormData {
     images : []
 }
 
-export default function PostCreate() {
+export default function PostCreate({menus} : {menus : Menu[]}) {
     const [post, setPost] = useState<FormData>({
         title: '',
         body: '',
@@ -28,6 +31,8 @@ export default function PostCreate() {
         keywords: '',
         images : []
     });
+    const [selectMenu, setMenu] = useState<Menu| null>(null);
+
 
     const onChangeValue = (e: any) => {
         const { name, value } = e.target;
@@ -48,6 +53,7 @@ export default function PostCreate() {
         formData.append('title', post.title);
         formData.append('body', post.body);
         formData.append('keywords', post.keywords);
+        formData.append('menu_id', selectMenu?.id || '')
 
         post.images.forEach((img, i) => {
             formData.append(`images[${i}]`, img);
@@ -70,6 +76,7 @@ export default function PostCreate() {
         setPost((prev) => ({ ...prev, images: [] }));
     };
 
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Post" />
@@ -78,19 +85,42 @@ export default function PostCreate() {
 
                 <form onSubmit={fnCreatePost} className="space-y-6">
                     {/* Title */}
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Title <span className="text-red-500">*</span>
-                        </label>
-                        <InputText
-                            id="title"
-                            name="title"
-                            value={post.title}
-                            onChange={onChangeValue}
-                            className="w-full"
-                            placeholder="Enter post title"
-                        />
+                    <div className="flex w-full gap-4">
+                        {/* Title Input */}
+                        <div className="w-1/2">
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Title <span className="text-red-500">*</span>
+                                </label>
+                                <InputText
+                                    id="title"
+                                    name="title"
+                                    value={post.title}
+                                    onChange={onChangeValue}
+                                    className="w-full"
+                                    placeholder="Enter post title"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Dropdown Menu */}
+                        <div className="w-1/2">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Menu <span className="text-red-500">*</span>
+                                </label>
+                                <Dropdown
+                                    value={selectMenu}
+                                    onChange={(e) => setMenu(e.value)}
+                                    options={menus}
+                                    optionLabel="name"
+                                    placeholder="Select a menu"
+                                    className="w-full"
+                                />
+                            </div>
+                        </div>
                     </div>
+
 
                     {/* Image Upload */}
                     <div className="flex flex-col gap-2">
