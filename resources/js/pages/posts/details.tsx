@@ -9,6 +9,8 @@ import axios from 'axios';
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload';
 import { useRef } from 'react';
 import { Toast } from 'primereact/toast';
+import { Chip } from 'primereact/chip';
+import { Tooltip } from 'primereact/tooltip';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
@@ -76,11 +78,26 @@ export default function PostPage({ post }: { post: Post }) {
             <div className="w-full mx-auto mt-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8 space-y-10">
 
                 {/* Title & Date */}
-                <div className="space-y-1">
-                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white">{post.title}</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Published on <span className="font-medium">{format(new Date(post.created_at), 'PPP')}</span>
-                    </p>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    {/* Title & Date */}
+                    <div className="space-y-2">
+                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+                            {post.title}
+                        </h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Published on{' '}
+                            <span className="font-medium text-gray-800 dark:text-gray-300">
+                            {format(new Date(post.created_at), 'PPP')}
+                          </span>
+                        </p>
+                    </div>
+
+                    {/* Tags */}
+                    <Tooltip target=".menu"  mouseTrack mouseTrackLeft={10} />
+                    <div className="flex gap-2 flex-wrap">
+                        {post?.menu && <Chip  data-pr-tooltip={'Menu'} label={post?.menu?.name} className="menu bg-blue-100 text-blue-800" /> }
+                        {post?.category && <Chip data-pr-tooltip={'Category'} label={post?.category?.name} className="menu bg-green-100 text-green-800" />}
+                    </div>
                 </div>
 
                 <div>

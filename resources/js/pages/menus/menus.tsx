@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {Menu } from '@/types/menus';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
@@ -9,6 +9,9 @@ import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { format } from 'date-fns';
+import { InputSwitch } from 'primereact/inputswitch';
+import { SelectButton } from 'primereact/selectbutton';
+import { Tag } from 'primereact/tag';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,10 +25,16 @@ export default function Menus({menus}: {menus: Menu[]}) {
     const [isOpenDeleteModel, setIsOpenDeleteModel] = useState(false)
     const [name, setName] = useState<string>('');
     const [menu, setMenu] = useState<Menu | null>(null)
+    const [isVisiable, setIsVisiable] = useState(true)
+    const options = ['main', 'sub'];
+    const [value, setValue] = useState(options[0]);
+
 
     const fnCreateMenu = () => {
         router.post('/menus', {
             name: name,
+            is_visible: isVisiable,
+            type: value
         }, {
             onSuccess: () => {
                 setIsOpen(false)
@@ -36,6 +45,8 @@ export default function Menus({menus}: {menus: Menu[]}) {
     const fnUpdateMenu = () => {
         router.put(`/menus/${menu?.id}`, {
             name: name,
+            is_visible: isVisiable,
+            type: value
         }, {
             onSuccess: () => {
                 setIsOpen(false)
@@ -63,6 +74,8 @@ export default function Menus({menus}: {menus: Menu[]}) {
         const updateM = () => {
             setMenu(field)
             setName(field.name)
+            setIsVisiable(field.is_visible)
+            setValue(field.type)
             setIsOpen(true)
         }
 
@@ -88,6 +101,14 @@ export default function Menus({menus}: {menus: Menu[]}) {
         )
     }
 
+    const fnIsVisible = (field : any) => {
+        return (
+            <div>
+                <Tag value={`${field.is_visible ? 'Yes' : 'No'}`}></Tag>
+            </div>
+        )
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -100,7 +121,9 @@ export default function Menus({menus}: {menus: Menu[]}) {
                 <div className="">
                     <DataTable value={menus} tableStyle={{ minWidth: '50rem' }}>
                         <Column field="name" body={fnName} header="Name" sortable style={{ width: '25%' }}></Column>
-                        <Column field="url" header="URL" sortable style={{ width: '25%' }}></Column>
+                        <Column field="url"  header="URL" sortable style={{ width: '25%' }}></Column>
+                        <Column field="is_visible" body={fnIsVisible} header="Visiable" sortable style={{ width: '25%' }}></Column>
+                        <Column field="type" header="Type" sortable style={{ width: '25%' }}></Column>
                         <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt" sortable style={{ width: '25%' }}></Column>
                         <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated" sortable style={{ width: '25%' }}></Column>
                         <Column body={actionGroup} header="Action" style={{ width: '25%' }}></Column>
@@ -123,7 +146,18 @@ export default function Menus({menus}: {menus: Menu[]}) {
                         </div>
                     </div>
 
-                    <div className="flex justify-start gap-4 items-start">
+                    <div className="card flex flex-grow justify-content-center mb-5">
+                        <div className={'w-1/2 flex flex-col gap-2'}>
+                            <span>Menu Type</span>
+                            <SelectButton value={value} onChange={(e) => setValue(e.value)} options={options} />
+                        </div>
+                        <div className={'w-1/2 flex flex-col gap-2'}>
+                            <span className={'mr-4'}>Menu Visible</span>
+                            <InputSwitch checked={isVisiable} onChange={(e) => setIsVisiable(e.value)} />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-start gap-4 mt-5 items-start">
                         <Button size={'small'} severity="danger" onClick={() => setIsOpen(false)}>Cancel</Button>
                         <Button size={'small'} onClick={() => menu?.id ? fnUpdateMenu() : fnCreateMenu()}>Save</Button>
                     </div>

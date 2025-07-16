@@ -20,4 +20,9 @@ class Menu extends Model
     {
         return $this->belongsTo(Page::class, 'page_id', 'id');
     }
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class, 'menu_id', 'id');
+    }
 }

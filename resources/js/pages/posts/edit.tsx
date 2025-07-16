@@ -5,7 +5,10 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { Editor } from 'primereact/editor';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Category, Menu } from '@/types/menus';
+import { Dropdown } from 'primereact/dropdown';
+import { Post } from '@/types/posts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
@@ -25,20 +28,25 @@ interface FormData {
     keywords: string;
     existingImages: ExistingImage[];
     newImages: File[];
+    menu_id: string | null,
+    category_id : string | null
 }
 
 interface Props {
-    post: {
+    post:{
         id: number;
         title: string;
         body: string;
         image: string | null;
         keywords: string;
         images: ExistingImage[];
+        category_id: string| null,
+        menu_id: string | null,
     };
+    menus : Menu []
 }
 
-export default function PostEdit({ post: initialPost }: Props) {
+export default function PostEdit({ post: initialPost, menus }: Props) {
     const [post, setPost] = useState<FormData>({
         title: initialPost.title,
         body: initialPost.body,
@@ -46,7 +54,29 @@ export default function PostEdit({ post: initialPost }: Props) {
         keywords: initialPost.keywords,
         existingImages: initialPost.images || [],
         newImages: [],
+        category_id: initialPost.category_id || null,
+        menu_id: initialPost.menu_id || null
     });
+
+    const [selectMenu, setMenu] = useState<Menu| null>(null);
+    const [categories, setCategories] = useState<Array<Category>>([]);
+    const [category, setCategory] = useState<Category| null>()
+
+    useEffect(() => {
+        if (initialPost.menu_id !== undefined) {
+            const menu = menus.find(menu => String(menu.id) === String(initialPost.menu_id));
+            if (menu) {
+                setMenu(menu);
+                setCategories(menu.categories);
+
+                const category = menu.categories.find(category => String(category.id) === String(initialPost.category_id));
+                if (category) {
+                    setCategory(category);
+                }
+            }
+        }
+    }, [initialPost.id]);
+
 
     // Handle text input change
     const onChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,12 +144,29 @@ export default function PostEdit({ post: initialPost }: Props) {
             formData.append(`new_images[${i}]`, img);
         });
 
+        if (selectMenu?.id !== undefined) {
+            formData.append('menu_id', String(selectMenu.id));
+        }
+
+        if (category?.id !== undefined) {
+            formData.append('category_id', String(category.id));
+        }
+
+
         formData.append('_method', 'PUT');
 
         router.post(`/posts/${initialPost.id}`, formData, {
             preserveScroll: true,
         });
     };
+
+    const onChangeMenu = (e) => {
+        const value = e.target.value
+        setMenu(value)
+        setCategories(value.categories)
+        setCategory(null)
+    }
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -129,18 +176,60 @@ export default function PostEdit({ post: initialPost }: Props) {
 
                 <form onSubmit={fnUpdatePost} className="space-y-6">
                     {/* Title */}
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Title <span className="text-red-500">*</span>
-                        </label>
-                        <InputText
-                            id="title"
-                            name="title"
-                            value={post.title}
-                            onChange={onChangeValue}
-                            className="w-full"
-                            placeholder="Enter post title"
-                        />
+                    <div className="flex w-full gap-4">
+                        {/* Title Input */}
+                        <div className="w-1/2">
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Title <span className="text-red-500">*</span>
+                                </label>
+                                <InputText
+                                    id="title"
+                                    name="title"
+                                    value={post.title}
+                                    onChange={onChangeValue}
+                                    className="w-full"
+                                    placeholder="Enter post title"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Dropdown Menu */}
+                        <div className="w-1/2">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Menu
+                                </label>
+                                <Dropdown
+                                    value={selectMenu}
+                                    onChange={onChangeMenu}
+                                    options={menus}
+                                    optionLabel="name"
+                                    placeholder="Select a menu"
+                                    className="w-full"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={'flex flex-row gap-5 w-1/2'}>
+                        {categories.length > 0 &&
+                            <div className="w-1/2">
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Category
+                                    </label>
+                                    <Dropdown
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        options={categories}
+                                        optionLabel="name"
+                                        placeholder="Select Category"
+                                        className="w-full"
+                                    />
+                                </div>
+                            </div>
+                        }
                     </div>
 
                     {/* Featured Image */}
@@ -204,7 +293,8 @@ export default function PostEdit({ post: initialPost }: Props) {
                     {/* Existing Images */}
                     {post.existingImages.length > 0 && (
                         <div>
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">Existing Images</h3>
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">Existing
+                                Images</h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {post.existingImages.map((img) => (
                                     <div key={img.id} className="relative border rounded overflow-hidden">

@@ -104,6 +104,8 @@ class MenuController extends Controller
 
         Menu::create([
             'name' => $request->get('name'),
+            'is_visible' => $request->get('is_visible'),
+            'type' => $request->get('type'),
             'url' => Str::slug($request->get('name')),
             'organization_id' => auth()->user()->organization_id,
         ]);
@@ -126,6 +128,8 @@ class MenuController extends Controller
 
         $menu->update([
             'name' => $request->get('name'),
+            'is_visible' => $request->get('is_visible'),
+            'type' => $request->get('type'),
             'url' => Str::slug($request->get('name'))
         ]);
 

@@ -6,8 +6,7 @@ import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { Editor } from 'primereact/editor';
 import { useState } from 'react';
-import { Menu } from '@/types/menus';
-import { AutoComplete } from 'primereact/autocomplete';
+import { Category, Menu } from '@/types/menus';
 import { Dropdown } from 'primereact/dropdown';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -32,8 +31,8 @@ export default function PostCreate({menus} : {menus : Menu[]}) {
         images : []
     });
     const [selectMenu, setMenu] = useState<Menu| null>(null);
-
-
+    const [categories, setCategories] = useState<Array<Category>>([]);
+    const [category, setCategory] = useState<Category| null>()
     const onChangeValue = (e: any) => {
         const { name, value } = e.target;
         setPost(prev => ({ ...prev, [name]: value }));
@@ -53,7 +52,14 @@ export default function PostCreate({menus} : {menus : Menu[]}) {
         formData.append('title', post.title);
         formData.append('body', post.body);
         formData.append('keywords', post.keywords);
-        formData.append('menu_id', selectMenu?.id || '')
+
+        if (selectMenu?.id !== undefined) {
+            formData.append('menu_id', String(selectMenu.id));
+        }
+
+        if (category?.id !== undefined) {
+            formData.append('category_id', String(category.id));
+        }
 
         post.images.forEach((img, i) => {
             formData.append(`images[${i}]`, img);
@@ -75,6 +81,14 @@ export default function PostCreate({menus} : {menus : Menu[]}) {
     const onTemplateClear = () => {
         setPost((prev) => ({ ...prev, images: [] }));
     };
+
+    const onChangeMenu = (e) => {
+       const value = e.target.value
+        setMenu(value)
+        setCategories(value.categories)
+        setCategory(null)
+    }
+
 
 
     return (
@@ -107,11 +121,11 @@ export default function PostCreate({menus} : {menus : Menu[]}) {
                         <div className="w-1/2">
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Menu <span className="text-red-500">*</span>
+                                    Menu
                                 </label>
                                 <Dropdown
                                     value={selectMenu}
-                                    onChange={(e) => setMenu(e.value)}
+                                    onChange={onChangeMenu}
                                     options={menus}
                                     optionLabel="name"
                                     placeholder="Select a menu"
@@ -122,25 +136,44 @@ export default function PostCreate({menus} : {menus : Menu[]}) {
                     </div>
 
 
-                    {/* Image Upload */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Featured Image
-                        </label>
-                        <FileUpload
-                            mode="basic"
-                            name="image"
-                            accept="image/*"
-                            maxFileSize={2000000}
-                            customUpload
-                            auto={false}
-                            chooseLabel="Choose Image"
-                            onSelect={onSelectImage}
-                            className="w-full"
-                        />
-                        {post.image && typeof post.image === 'object' && (
-                            <p className="text-sm text-green-600 mt-1">Selected: {post.image.name}</p>
-                        )}
+                    <div className={'flex flex-row gap-5 w-1/2'}>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Featured Image
+                            </label>
+                            <FileUpload
+                                mode="basic"
+                                name="image"
+                                accept="image/*"
+                                maxFileSize={2000000}
+                                customUpload
+                                auto={false}
+                                chooseLabel="Choose Image"
+                                onSelect={onSelectImage}
+                                className="w-full"
+                            />
+                            {post.image && typeof post.image === 'object' && (
+                                <p className="text-sm text-green-600 mt-1">Selected: {post.image.name}</p>
+                            )}
+                        </div>
+                        {categories.length  > 0 &&
+                            <div className="w-1/2">
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Category
+                                    </label>
+                                    <Dropdown
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        options={categories}
+                                        optionLabel="name"
+                                        placeholder="Select Category"
+                                        className="w-full"
+                                    />
+                                </div>
+                            </div>
+                        }
+
                     </div>
 
                     {/* Body */}

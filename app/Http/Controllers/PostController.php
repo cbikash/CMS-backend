@@ -41,6 +41,7 @@ class PostController extends Controller
     public function create()
     {
         $menus = Menu::select('id', 'name')
+            ->with('categories')
             ->where('organization_id', auth()->user()->organization_id)
             ->orderByDesc('id')
             ->get();
@@ -58,7 +59,7 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'body' => 'required|string',
+            'body' => 'nullable|string',
             'keywords' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp', // 2MB max
         ]);
@@ -75,12 +76,13 @@ class PostController extends Controller
 
         $post = Post::create([
             'title' => $validated['title'],
-            'body' => $validated['body'],
+            'body' => $request->get('body'),
             'keywords' => $validated['keywords'] ?? '',
             'image' => $validated['image'] ?? null,
             'slug' => $validated['slug'],
             'seo' => $validated['seo'],
-            'menu_id' => $validated['menu_id'],
+            'menu_id' => $request->input('menu_id'),
+            'category_id' => $request->input('category_id'),
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
             'published_by' => auth()->id(),
@@ -107,7 +109,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post->load('images');
+        $post->load(['images', 'menu', 'category']);
 
         if($this->validateOrganization($post->organization_id)) {
             return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
@@ -149,14 +151,21 @@ class PostController extends Controller
      */
     public function edit(Request $request, Post $post)
     {
-        $post->load('images');
+        $post->load(['images']);
+
+        $menus = Menu::select('id', 'name')
+            ->with('categories')
+            ->where('organization_id', auth()->user()->organization_id)
+            ->orderByDesc('id')
+            ->get();
 
         if ($this->validateOrganization($post->organization_id)) {
             return Redirect::back()->with('error', 'Sorry, you cannot edit yourself.');
         }
 
         return Inertia::render('posts/edit', [
-            'post' => $post
+            'post' => $post,
+            'menus' => $menus,
         ]);
     }
 
@@ -167,7 +176,7 @@ class PostController extends Controller
         // Validate incoming request data
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'body' => 'required|string',
+            'body' => 'nullable|string',
             'keywords' => 'nullable|string',
             'menu_id' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp', // 2MB max

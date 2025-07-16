@@ -14,4 +14,14 @@ class Post extends Model
         return $this->morphToMany(Image::class, 'imageable', 'imageables');
     }
 
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'menu_id', 'id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+
 }

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('url');
+            $table->enum('type', ['main', 'sub'])->default('main');
+            $table->boolean('is_visible')->default(true);
             $table->integer('order')->default(0);
             $table->boolean('parent_id')->nullable();
             $table->boolean('is_active')->default(true);

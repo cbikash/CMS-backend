@@ -31,6 +31,8 @@ return new class extends Migration
             $table->text('custom_field4')->nullable();
             $table->foreignId('menu_id')->nullable()
                 ->references('id')->on('menus')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()
+                ->references('id')->on('categories');
             $table->softDeletes();
             $table->timestamps();
         });

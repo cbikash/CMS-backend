@@ -1,3 +1,4 @@
+import { Category, Menu } from '@/types/menus';
 
 export interface Image {
     id: number,
@@ -21,7 +22,9 @@ export interface Post {
     published_by?: string;
     organization_id?: string;
     deleted_at?: string;
-    images? : Image[]
+    images? : Image[],
+    menu?: Menu,
+    category?: Category
 }
 
 export interface Message {

@@ -38,15 +38,18 @@ export default function Posts({ posts }: { posts: Post[] }) {
 
     const renderImage = (image: string, post: Post) => {
         return (
-            <img
+            <>
+            { image &&
+                <img
                 src={`/uploads/${image}`}
                 alt={post.title}
                 className="h-16 w-auto rounded-md object-cover"
-                onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/placeholder.png'; // fallback image if needed
-                }}
             />
-        );
+            }
+            </>
+
+    )
+        ;
     };
 
     const actionBodyTemplate = (post: Post) => {

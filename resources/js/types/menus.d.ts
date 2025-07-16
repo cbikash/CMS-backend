@@ -3,7 +3,8 @@ export interface Menu {
     name: string,
     url: string,
     created_at : string,
-    updated_at : string
+    updated_at : string,
+    categories: Category[]
 }
 
 export interface Category {
