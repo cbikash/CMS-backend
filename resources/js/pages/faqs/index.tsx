@@ -106,8 +106,8 @@ export default function Faqs({faqs}: {faqs: FAQ[]}) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="FAQs" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="flex justify-content-start">
+                <div className="">
+                    <div className="flex w-full justify-end">
                         <Button size={'small'} onClick={() => setIsOpen(true)}>FAQs +</Button>
                     </div>
                 </div>

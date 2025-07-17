@@ -134,7 +134,7 @@ export default function Dashboard(props) {
 }
 
 function StatCard({ title, value, trend, color, icon }: any) {
-    const bg = {
+    const bg  = {
         blue: 'from-blue-100 to-blue-200',
         purple: 'from-purple-100 to-purple-200',
         yellow: 'from-yellow-100 to-yellow-200',

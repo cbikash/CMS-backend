@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\CommentController;
 use App\Http\Controllers\Api\v1\MenuController;
 use App\Http\Controllers\Api\v1\MessageController;
 use App\Http\Controllers\Api\v1\PostController;
@@ -25,4 +26,6 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/menus', [MenuController::class, 'index']);
     Route::get('/menus/{menu}/categories', [MenuController::class, 'menuCategories']);
     Route::get('/menus/{menu}/posts', [MenuController::class, 'menuPosts']);
+    Route::get('/comments/{post}', [CommentController::class, 'index']);
+    Route::post('/comments/{post}', [CommentController::class, 'store']);
 });
