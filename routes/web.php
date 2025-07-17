@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ImageController;
@@ -11,12 +12,11 @@ use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('organization/profile', [OrganizationController::class, 'show']);
     Route::get('organization/token', [OrganizationController::class, 'token']);
     Route::post('organizations/{organization}', [OrganizationController::class, 'update']);
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::post('users', [UserController::class, 'store'])->name('users.store');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

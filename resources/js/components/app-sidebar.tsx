@@ -6,11 +6,10 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
     MenuSquare,
-    FolderCheckIcon,
     AirVentIcon,
     Folder,
     LayoutGrid,
-    FileQuestionIcon, SubscriptIcon, MessageCircle, Building, Columns3, DiamondPercent, BookUser
+    FileQuestionIcon, SubscriptIcon, MessageCircle, Building, Columns3, DiamondPercent, BookUser, LucideUsers
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -70,6 +69,11 @@ const footerNavItems: NavItem[] = [
         icon: Building,
     },
     {
+        title: 'Users',
+        href: '/users',
+        icon: LucideUsers,
+    },
+    {
         title: 'Setting',
         href: '/settings',
         icon: Folder,
@@ -97,7 +101,7 @@ export function AppSidebar() {
 
             <SidebarFooter>
                 <NavFooter items={footerNavItems} className="mt-auto" />
-                <NavUser />
+                {/*<NavUser />*/}
             </SidebarFooter>
         </Sidebar>
     );

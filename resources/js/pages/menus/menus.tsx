@@ -12,6 +12,8 @@ import { format } from 'date-fns';
 import { InputSwitch } from 'primereact/inputswitch';
 import { SelectButton } from 'primereact/selectbutton';
 import { Tag } from 'primereact/tag';
+import { Blocks } from 'lucide-react';
+import { Tooltip } from 'primereact/tooltip';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -86,7 +88,8 @@ export default function Menus({menus}: {menus: Menu[]}) {
 
         return (<>
             <div className={'flex gap-2'}>
-                <Button severity="warning" icon="pi pi-chart-bar" onClick={() => router.get(`/menus/${field.id}/categories`)}></Button>
+                <Tooltip target=".category"  mouseTrack mouseTrackLeft={10} />
+                <Button className={'category'} severity="warning" data-pr-tooltip={'Category'} onClick={() => router.get(`/menus/${field.id}/categories`)}><Blocks /></Button>
                 <Button size={'small'} severity="info" icon="pi pi-pencil" onClick={updateM} />
                 <Button size={'small'} severity="danger" icon="pi pi-trash" onClick={deleteModel} />
             </div>
