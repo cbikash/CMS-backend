@@ -1,3 +1,4 @@
+// Keep all imports as before...
 import type { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
@@ -8,10 +9,14 @@ import { Editor } from 'primereact/editor';
 import { useState } from 'react';
 import { Category, Menu } from '@/types/menus';
 import { Dropdown } from 'primereact/dropdown';
+import { ToggleButton } from 'primereact/togglebutton';
+import { Card } from 'primereact/card';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { FloatLabel } from 'primereact/floatlabel';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
-    { title: 'Post Create', href: '/posts/create' },
+    { title: 'Create', href: '/posts/create' },
 ];
 
 interface FormData {
@@ -19,47 +24,76 @@ interface FormData {
     body: string;
     image: any;
     keywords: string;
-    images : []
+    images: any[];
+    description: string,
+    meta_title: string,
+    meta_description: string
+    meta_keywords: string
 }
 
-export default function PostCreate({menus} : {menus : Menu[]}) {
+export default function PostCreate({ menus }: { menus: Menu[] }) {
     const [post, setPost] = useState<FormData>({
         title: '',
         body: '',
         image: '',
         keywords: '',
-        images : []
+        description: '',
+        meta_title: '',
+        meta_description: '',
+        meta_keywords: '',
+        images: [],
     });
-    const [selectMenu, setMenu] = useState<Menu| null>(null);
+
+    const [selectMenu, setMenu] = useState<Menu | null>(null);
     const [categories, setCategories] = useState<Array<Category>>([]);
-    const [category, setCategory] = useState<Category| null>()
+    const [category, setCategory] = useState<Category | null>(null);
+    const [enableComments, setEnableComments] = useState(true);
+    const [publish, setPublish] = useState(true);
+
     const onChangeValue = (e: any) => {
         const { name, value } = e.target;
-        setPost(prev => ({ ...prev, [name]: value }));
+        setPost((prev) => ({ ...prev, [name]: value }));
     };
 
     const onSelectImage = (e: any) => {
-        if (e.files && e.files.length > 0) {
-            setPost(prev => ({ ...prev, image: e.files[0] }));
+        if (e.files?.length) {
+            setPost((prev) => ({ ...prev, image: e.files[0] }));
         }
+    };
+
+    const onSelectImages = (e: any) => {
+        if (e.files?.length) {
+            setPost((prev) => ({ ...prev, images: [...prev.images, ...e.files] }));
+        }
+    };
+
+    const onTemplateClear = () => {
+        setPost((prev) => ({ ...prev, images: [] }));
+    };
+
+    const onChangeMenu = (e: any) => {
+        const value = e.target.value;
+        setMenu(value);
+        setCategories(value.categories || []);
+        setCategory(null);
     };
 
     const fnCreatePost = (e: React.FormEvent) => {
         e.preventDefault();
-
         const formData = new FormData();
         formData.append('image', post.image);
         formData.append('title', post.title);
         formData.append('body', post.body);
         formData.append('keywords', post.keywords);
+        formData.append('meta_title', post.meta_title)
+        formData.append('meta_keywords', post.meta_keywords)
+        formData.append('meta_description', post.meta_description)
+        formData.append('description', post.description)
 
-        if (selectMenu?.id !== undefined) {
-            formData.append('menu_id', String(selectMenu.id));
-        }
-
-        if (category?.id !== undefined) {
-            formData.append('category_id', String(category.id));
-        }
+        if (selectMenu?.id) formData.append('menu_id', String(selectMenu.id));
+        if (category?.id) formData.append('category_id', String(category.id));
+        if (enableComments) formData.append('enabled_comment', '1');
+        if (publish) formData.append('status', 'published');
 
         post.images.forEach((img, i) => {
             formData.append(`images[${i}]`, img);
@@ -68,142 +102,111 @@ export default function PostCreate({menus} : {menus : Menu[]}) {
         router.post('/posts', formData);
     };
 
-
-    const onSelectImages = (e) => {
-        if (e.files && e.files.length > 0) {
-            setPost((prev) => ({
-                ...prev,
-                images: [...prev.images, ...e.files],
-            }));
-        }
-    };
-
-    const onTemplateClear = () => {
-        setPost((prev) => ({ ...prev, images: [] }));
-    };
-
-    const onChangeMenu = (e) => {
-       const value = e.target.value
-        setMenu(value)
-        setCategories(value.categories)
-        setCategory(null)
-    }
-
-
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Post" />
-            <div className="flex flex-1 w-full flex-col rounded-xl bg-white dark:bg-gray-900 p-6 shadow-md mx-auto">
-                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Create New Post</h1>
 
-                <form onSubmit={fnCreatePost} className="space-y-6">
-                    {/* Title */}
-                    <div className="flex w-full gap-4">
-                        {/* Title Input */}
-                        <div className="w-1/2">
-                            <div className="flex flex-col gap-2">
-                                <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Title <span className="text-red-500">*</span>
-                                </label>
-                                <InputText
-                                    id="title"
-                                    name="title"
-                                    value={post.title}
-                                    onChange={onChangeValue}
-                                    className="w-full"
-                                    placeholder="Enter post title"
-                                />
-                            </div>
+            <div className="w-full bg-gray-50">
+                <div className="max-w-5xl mx-auto px-4 py-8 space-y-4">
+                <h1 className="text-2xl font-semibold mb-6">Create a new post</h1>
+
+                <form onSubmit={fnCreatePost} className="space-y-10">
+
+                    {/* Details */}
+                    <Card title="Details" subTitle="Title, short description, image..." className="bg-white shadow rounded-xl ">
+                        <hr/>
+                        <br/>
+                        <div className="space-y-4 gap-4 mb-6">
+                            <FloatLabel>
+                                <InputText id={'title'} name="title" value={post.title} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="title">Title</label>
+                            </FloatLabel>
+
                         </div>
-
-                        {/* Dropdown Menu */}
-                        <div className="w-1/2">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Menu
-                                </label>
-                                <Dropdown
-                                    value={selectMenu}
-                                    onChange={onChangeMenu}
-                                    options={menus}
-                                    optionLabel="name"
-                                    placeholder="Select a menu"
-                                    className="w-full"
-                                />
-                            </div>
+                        <div className={'mb-4'}>
+                            <FloatLabel>
+                                <InputTextarea id={'desc'} name={'description'} value={post.description} onChange={onChangeValue}
+                                               placeholder="Description" className="w-full" />
+                                <label htmlFor="desc">Description</label>
+                            </FloatLabel>
                         </div>
-                    </div>
+                        {/*<InputText name="keywords" value={post.keywords} onChange={onChangeValue} placeholder="Short description" className="w-full" />*/}
 
-
-                    <div className={'flex flex-row gap-5 w-1/2'}>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Featured Image
-                            </label>
-                            <FileUpload
-                                mode="basic"
-                                name="image"
-                                accept="image/*"
-                                maxFileSize={2000000}
-                                customUpload
-                                auto={false}
-                                chooseLabel="Choose Image"
-                                onSelect={onSelectImage}
-                                className="w-full"
-                            />
-                            {post.image && typeof post.image === 'object' && (
-                                <p className="text-sm text-green-600 mt-1">Selected: {post.image.name}</p>
-                            )}
-                        </div>
-                        {categories.length  > 0 &&
-                            <div className="w-1/2">
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Category
-                                    </label>
-                                    <Dropdown
-                                        value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
-                                        options={categories}
-                                        optionLabel="name"
-                                        placeholder="Select Category"
-                                        className="w-full"
-                                    />
-                                </div>
-                            </div>
-                        }
-
-                    </div>
-
-                    {/* Body */}
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="body" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Content
-                        </label>
+                        <span className={''}>Content</span>
                         <Editor
                             value={post.body}
-                            onTextChange={e => setPost(prev => ({ ...prev, body: e.htmlValue || '' }))}
+                            onTextChange={(e) => setPost((prev) => ({ ...prev, body: e.htmlValue || '' }))}
                             style={{ height: '300px' }}
                         />
-                    </div>
+                    </Card>
 
-                    {/* Keywords */}
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="keywords" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Keywords
-                        </label>
-                        <InputText
-                            id="keywords"
-                            name="keywords"
-                            value={post.keywords}
-                            onChange={onChangeValue}
+
+                    <Card title="Cover" className="bg-white shadow rounded-xl space-y-4">
+                        <FileUpload
+                            mode="basic"
+                            name="image"
+                            accept="image/*"
+                            maxFileSize={2000000}
+                            customUpload
+                            auto={false}
+                            chooseLabel="Select file"
+                            onSelect={onSelectImage}
                             className="w-full"
-                            placeholder="SEO keywords (comma separated)"
                         />
-                    </div>
+                        {post.image && <p className="text-sm text-green-600">Selected: {post.image.name}</p>}
+                    </Card>
 
-                    <div>
+                    {/* Properties */}
+                    <Card title={'Properties'} subTitle={'Additional functions and attributes...'}
+                          className="bg-white shadow rounded-xl space-y-6">
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <Dropdown value={selectMenu} onChange={onChangeMenu} options={menus} optionLabel="name"
+                                      placeholder="Select menu" className="w-full" />
+                            {categories.length > 0 && (
+                                <Dropdown value={category} onChange={(e) => setCategory(e.target.value)}
+                                          options={categories} optionLabel="name" placeholder="Select category"
+                                          className="w-full" />
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-8 mb-4">
+                            <FloatLabel>
+                                <InputText id={'meta_title'} name="meta_title" value={post.meta_title} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_title">Meta Title</label>
+                            </FloatLabel>
+
+                            <FloatLabel>
+                                <InputTextarea id={'meta_description'} name="meta_description" value={post.meta_description} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_description">Meta Description</label>
+                            </FloatLabel>
+
+                            <FloatLabel>
+                                <InputText id={'meta_keywords'} name="meta_keywords" value={post.meta_description} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_keywords">Meta Keywords</label>
+                            </FloatLabel>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <ToggleButton
+                                checked={enableComments}
+                                onChange={(e) => setEnableComments(e.value)}
+                                onLabel="Comments enabled"
+                                offLabel="Comments disabled"
+                                className="w-full"
+                            />
+                            <ToggleButton
+                                checked={publish}
+                                onChange={(e) => setPublish(e.value)}
+                                onLabel="Publish"
+                                offLabel="Draft"
+                                className="w-full"
+                            />
+                        </div>
+                    </Card>
+
+                    {/* Gallery Upload */}
+                    <Card title={'Gallery'} className="bg-white shadow rounded-xl space-y-4">
                         <FileUpload
                             name="images[]"
                             multiple
@@ -218,32 +221,24 @@ export default function PostCreate({menus} : {menus : Menu[]}) {
                             onClear={onTemplateClear}
                             emptyTemplate={<p className="m-0">Drag and drop images here or click to select.</p>}
                         />
-                        {/* Previews */}
                         {post.images.length > 0 && (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {post.images.map((img, index) => (
-                                    <div key={index} className="relative border rounded overflow-hidden">
-                                        <img
-                                            src={URL.createObjectURL(img)}
-                                            alt={`Preview ${index}`}
-                                            className="w-full h-32 object-cover"
-                                        />
+                                    <div key={index} className="border rounded overflow-hidden">
+                                        <img src={URL.createObjectURL(img)} alt={`Preview ${index}`} className="w-full h-32 object-cover" />
                                         <span className="block text-center text-xs truncate p-1">{img.name}</span>
                                     </div>
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </Card>
 
-                    {/* Submit */}
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            type="submit"
-                            label="Publish Post"
-                            className="px-5 py-2 text-white bg-indigo-600 hover:bg-indigo-700 border-none"
-                        />
+                    {/* Action Buttons */}
+                    <div className="flex justify-end gap-3">
+                        <Button type="submit" label="Create Post" className="bg-indigo-600 border-none" />
                     </div>
                 </form>
+            </div>
             </div>
         </AppLayout>
     );

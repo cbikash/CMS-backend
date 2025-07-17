@@ -17,9 +17,17 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->longText('body')->nullable();
             $table->string('image')->nullable();
+            $table->text('description')->nullable();
+
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+            $table->string('meta_keywords')->nullable();
+            $table->boolean('enabled_comment')->default(true);
+
             $table->enum('status', ['published', 'draft', 'create'])->default('create');
             $table->text('keywords')->nullable();
             $table->text('seo')->nullable();
+
             $table->dateTime('published_at')->nullable();
             $table->foreignId('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('updated_by')->references('id')->on('users')->onDelete('cascade');

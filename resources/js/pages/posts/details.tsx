@@ -22,7 +22,6 @@ export default function PostPage({ post }: { post: Post }) {
 
     const handleImageDelete = async (imageId: number) => {
         if (!confirm('Are you sure you want to delete this image?')) return;
-
         try {
             await axios.delete(`/ajax/posts/${post.id}/${imageId}/remove`);
             toast.current?.show({ severity: 'success', summary: 'Deleted', detail: 'Image deleted', life: 2000 });
@@ -57,7 +56,6 @@ export default function PostPage({ post }: { post: Post }) {
                 detail: `Post is now ${response.data.status}`,
                 life: 2000,
             });
-
             router.reload({ only: ['post'] });
         } catch (error) {
             toast.current?.show({
@@ -69,67 +67,64 @@ export default function PostPage({ post }: { post: Post }) {
         }
     };
 
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Post - ${post.title}`} />
             <Toast ref={toast} />
 
-            <div className="w-full mx-auto mt-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8 space-y-10">
-
-                {/* Title & Date */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    {/* Title & Date */}
-                    <div className="space-y-2">
-                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-                            {post.title}
-                        </h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="max-w-6xl mx-auto mt-6 bg-white dark:bg-gray-900 rounded-2xl shadow p-6 sm:p-10 space-y-10">
+                {/* Header Section */}
+                <div className="flex flex-col sm:flex-row justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{post.title}</h1>
+                        <p className="text-sm text-gray-500 mt-1">
                             Published on{' '}
                             <span className="font-medium text-gray-800 dark:text-gray-300">
-                            {format(new Date(post.created_at), 'PPP')}
-                          </span>
+                                {format(new Date(post.created_at), 'PPP')}
+                            </span>
                         </p>
                     </div>
 
-                    {/* Tags */}
-                    <Tooltip target=".menu"  mouseTrack mouseTrackLeft={10} />
-                    <div className="flex gap-2 flex-wrap">
-                        {post?.menu && <Chip  data-pr-tooltip={'Menu'} label={post?.menu?.name} className="menu bg-blue-100 text-blue-800" /> }
-                        {post?.category && <Chip data-pr-tooltip={'Category'} label={post?.category?.name} className="menu bg-green-100 text-green-800" />}
+                    <div className="flex gap-2 flex-wrap items-start sm:items-center">
+                        <Tooltip target=".menu" mouseTrack mouseTrackLeft={10} />
+                        {post.menu && <Chip className="menu bg-blue-100 text-blue-800" label={post.menu.name} />}
+                        {post.category &&
+                            <Chip className="menu bg-green-100 text-green-800" label={post.category.name} />}
                     </div>
                 </div>
 
+                {/* Toggle Status */}
                 <div>
                     <Button
                         label={post.status === 'published' ? 'Unpublish' : 'Publish'}
                         icon={post.status === 'published' ? 'pi pi-eye-slash' : 'pi pi-eye'}
                         severity={post.status === 'published' ? 'warning' : 'success'}
                         onClick={handleToggleStatus}
+                        className="rounded-md"
                         outlined
                     />
                 </div>
 
-                {/* Main Image */}
+                {/* Featured Image */}
                 {post.image && (
-                    <div className="w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                         <Image
                             src={`/uploads/${post.image}`}
                             alt={post.title}
                             imageClassName="w-full h-[300px] object-cover"
+                            preview
                         />
                     </div>
                 )}
 
-                {/* Post Body */}
-                <div
-                    className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300"
-                    dangerouslySetInnerHTML={{ __html: post.body }}
-                />
+                {/* Body Content */}
+                <div className="prose max-w-none dark:prose-invert prose-lg text-gray-700 dark:text-gray-300">
+                    <div dangerouslySetInnerHTML={{ __html: post.body }} />
+                </div>
 
-                {/* Upload Section */}
+                {/* Upload Images */}
                 <div
-                    className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800">
+                    className="p-6 border-2 border-dashed rounded-xl bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
                     <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Add Images to Gallery</h3>
                     <FileUpload
                         ref={fileUploadRef}
@@ -149,24 +144,25 @@ export default function PostPage({ post }: { post: Post }) {
                     />
                 </div>
 
-                {/* Gallery */}
+                {/* Image Gallery */}
                 {post.images && post.images.length > 0 && (
                     <div className="space-y-4">
                         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Gallery</h2>
-                        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             {post.images.map((image) => (
                                 <div
                                     key={image.id}
-                                    className="relative group rounded-lg overflow-hidden border dark:border-gray-700 hover:shadow-md transition-shadow"
+                                    className="relative group overflow-hidden rounded-lg border dark:border-gray-700 hover:shadow-md transition"
                                 >
-
-                                    <Image  className="w-full h-48 object-cover" src={`/uploads/${image.name}`} alt={`Post Image ${image.id}`} preview />
-
-                                    {/* Delete on Hover */}
+                                    <Image
+                                        className="w-full h-48 object-cover"
+                                        src={`/uploads/${image.name}`}
+                                        alt={`Post Image ${image.id}`}
+                                        preview
+                                    />
                                     <button
-                                        type="button"
                                         onClick={() => handleImageDelete(image.id)}
-                                        className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md hover:bg-red-700"
+                                        className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded shadow hover:bg-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                                     >
                                         Delete
                                     </button>

@@ -36,91 +36,85 @@ export default function Posts({ posts }: { posts: Post[] }) {
         return <Badge value={status} severity={severity} className="capitalize" />;
     };
 
-    const renderImage = (image: string, post: Post) => {
-        return (
-            <>
-            { image &&
-                <img
+    const renderImage = (image: string, post: Post) => (
+        <div className="flex items-center justify-center">
+            <img
                 src={`/uploads/${image}`}
                 alt={post.title}
-                className="h-16 w-auto rounded-md object-cover"
+                className="h-16 w-24 rounded-md object-cover shadow-sm"
+                onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/placeholder.png';
+                }}
             />
-            }
-            </>
+        </div>
+    );
 
-    )
-        ;
-    };
-
-    const actionBodyTemplate = (post: Post) => {
-        return (
-            <div className={'flex flex-row gap-2'}>
-                <Link
-                    href={`/posts/${post.id}`}
-                    className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
-                    aria-label={`View details of ${post.title}`}
-                >
-                    <EyeIcon className="w-5 h-5" />
-                </Link>
-                <Link
-                    href={`/posts/${post.id}/edit`}
-                    className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
-                    aria-label={`View details of ${post.title}`}
-                >
-                    <EditIcon className="w-5 h-5" />
-                </Link>
-            </div>
-
-
-        );
-    };
+    const actionBodyTemplate = (post: Post) => (
+        <div className="flex gap-3 justify-center">
+            <Link
+                href={`/posts/${post.id}`}
+                className="text-blue-500 hover:text-blue-700 transition-colors"
+                title="View"
+            >
+                <EyeIcon className="w-5 h-5" />
+            </Link>
+            <Link
+                href={`/posts/${post.id}/edit`}
+                className="text-indigo-500 hover:text-indigo-700 transition-colors"
+                title="Edit"
+            >
+                <EditIcon className="w-5 h-5" />
+            </Link>
+        </div>
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Posts" />
-            <div className="flex flex-col gap-6 p-4">
-                <div className="flex justify-end">
+
+            <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Posts</h1>
                     <Link
                         href="/posts/create"
-                        className="inline-block rounded bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium transition-all"
                     >
                         + New Post
                     </Link>
                 </div>
 
-                <div className="overflow-auto rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="overflow-auto rounded-lg border border-gray-200 dark:border-gray-700 shadow">
                     <DataTable
                         value={posts}
                         size="small"
                         responsiveLayout="scroll"
-                        tableClassName="min-w-full"
+                        tableClassName="min-w-full text-sm"
                         emptyMessage="No posts found."
                     >
                         <Column
                             header="Image"
                             body={(row) => renderImage(row.image, row)}
-                            sortable
-                            style={{ width: '10rem' }}
+                            style={{ width: '120px' }}
                         />
-                        <Column field="title" header="Title" sortable style={{ minWidth: '14rem' }} />
+                        <Column field="title" header="Title" sortable style={{ minWidth: '200px' }} />
                         <Column
                             field="status"
                             header="Status"
                             body={(row) => renderStatus(row.status)}
                             sortable
-                            style={{ width: '8rem' }}
+                            style={{ width: '100px' }}
                         />
                         <Column
                             field="created_at"
                             header="Created At"
                             body={(row) => formatDate(row.created_at)}
                             sortable
-                            style={{ minWidth: '12rem' }}
+                            style={{ width: '180px' }}
                         />
                         <Column
                             header="Action"
                             body={actionBodyTemplate}
-                            style={{ width: '8rem' }}
+                            style={{ width: '100px' }}
                             exportable={false}
                         />
                     </DataTable>

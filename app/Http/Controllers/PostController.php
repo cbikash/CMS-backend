@@ -62,6 +62,11 @@ class PostController extends Controller
             'body' => 'nullable|string',
             'keywords' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp', // 2MB max
+            'category_id' => 'nullable|integer',
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'meta_keywords' => 'nullable|string',
+            'description' => 'nullable|string',
         ]);
 
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']) . '-' . Str::random(4);
@@ -83,6 +88,12 @@ class PostController extends Controller
             'seo' => $validated['seo'],
             'menu_id' => $request->input('menu_id'),
             'category_id' => $request->input('category_id'),
+            'meta_title' => $request->input('meta_title'),
+            'meta_description' => $request->input('meta_description'),
+            'meta_keywords' => $request->input('meta_keywords'),
+            'description' => $request->input('description'),
+            'status' => $request->input('status'),
+            'enabled_comment' => $request->input('enabled_comment'),
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
             'published_by' => auth()->id(),
@@ -180,11 +191,15 @@ class PostController extends Controller
             'keywords' => 'nullable|string',
             'menu_id' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp', // 2MB max
+            'category_id' => 'nullable|integer',
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'meta_keywords' => 'nullable|string',
+            'description' => 'nullable|string',
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $this->imageUploader->uploadAndConvertToWebp($request->get('image'));
-
+            $path = $this->imageUploader->uploadAndConvertToWebp($request->file('image'));
             $validatedData['image'] = $path;
         }
 
