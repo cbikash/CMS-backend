@@ -76,10 +76,11 @@ export default function Posts({ posts, menu }: { posts: Post[], menu: Menu }) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Posts" />
             <div className="flex flex-col gap-6 p-4">
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Posts of {menu.name}</h1>
                     <Link
                         href="/posts/create"
-                        className="inline-block rounded bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium transition-all"
                     >
                         + New Post
                     </Link>

@@ -116,19 +116,21 @@ export default function Menus({menus}: {menus: Menu[]}) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className="">
-                    <div className="flex justify-end">
-                        <Button size={'small'} onClick={() => setIsOpen(true)}>Menu +</Button>
-                    </div>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Menu Management</h2>
+                    <Button icon="pi pi-plus" label="Add Menu" className="p-button-sm" onClick={() => setIsOpen(true)} />
                 </div>
                 <div className="">
                     <DataTable value={menus} tableStyle={{ minWidth: '50rem' }}>
                         <Column field="name" body={fnName} header="Name" sortable style={{ width: '25%' }}></Column>
-                        <Column field="url"  header="URL" sortable style={{ width: '25%' }}></Column>
-                        <Column field="is_visible" body={fnIsVisible} header="Visiable" sortable style={{ width: '25%' }}></Column>
+                        <Column field="url" header="URL" sortable style={{ width: '25%' }}></Column>
+                        <Column field="is_visible" body={fnIsVisible} header="Visiable" sortable
+                                style={{ width: '25%' }}></Column>
                         <Column field="type" header="Type" sortable style={{ width: '25%' }}></Column>
-                        <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt" sortable style={{ width: '25%' }}></Column>
-                        <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated" sortable style={{ width: '25%' }}></Column>
+                        <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt"
+                                sortable style={{ width: '25%' }}></Column>
+                        <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated"
+                                sortable style={{ width: '25%' }}></Column>
                         <Column body={actionGroup} header="Action" style={{ width: '25%' }}></Column>
                     </DataTable>
                 </div>
@@ -166,17 +168,17 @@ export default function Menus({menus}: {menus: Menu[]}) {
                     </div>
                 </Dialog>
 
-                <Dialog header="Delete Menu" visible={isOpenDeleteModel} style={{ width: '20vw' }} onHide={() => {
+                <Dialog header="Delete Menu" visible={isOpenDeleteModel} style={{ width: '36vw' }} onHide={() => {
                     if (!isOpenDeleteModel) return;
-                    setIsOpen(false);
+                    setIsOpenDeleteModel(false);
                 }}>
-                    <div className={'flex flex-col gap-4'}>
+                    <div className={'flex flex-col mb-4'}>
                         <div className="w-full mb-4">
                             <p>Are you sure you want to delete menu?</p>
                         </div>
                     </div>
 
-                    <div className="flex justify-start gap-4 items-start">
+                    <div className="flex justify-start mb-4 gap-4 items-start">
                         <Button size={'small'} onClick={() => setIsOpenDeleteModel(false)}>Cancel</Button>
                         <Button size={'small'} severity="danger" onClick={() => fnDeleteMenu()}>Save</Button>
                     </div>

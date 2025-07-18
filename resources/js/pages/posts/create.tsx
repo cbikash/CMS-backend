@@ -1,172 +1,244 @@
+// Keep all imports as before...
+import type { BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
-import { useRef, useState } from 'react';
-import { InputText } from "primereact/inputtext";
-import { Editor } from 'primereact/editor';
-import { FileUpload, FileUploadHeaderTemplateOptions, FileUploadSelectEvent, FileUploadUploadEvent, ItemTemplateOptions } from 'primereact/fileupload';
-import { Toast } from 'primereact/toast';
-import { ProgressBar } from 'primereact/progressbar';
+import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Tooltip } from 'primereact/tooltip';
-import { Tag } from 'primereact/tag';
-import { type BreadcrumbItem } from '@/types';
-import { Menu } from '@/types/menus';
-import { Post } from '@/types/posts';
+import { FileUpload } from 'primereact/fileupload';
+import { Editor } from 'primereact/editor';
+import { useState } from 'react';
+import { Category, Menu } from '@/types/menus';
+import { Dropdown } from 'primereact/dropdown';
+import { ToggleButton } from 'primereact/togglebutton';
+import { Card } from 'primereact/card';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { FloatLabel } from 'primereact/floatlabel';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
-    { title: 'Post Create', href: '/posts/create' },
+    { title: 'Create', href: '/posts/create' },
 ];
 
-export default function Posts({ menus }: { menus: Menu }) {
-    const [text, setText] = useState('');
-    const [totalSize, setTotalSize] = useState(0);
-    const toast = useRef<Toast>(null);
-    const fileUploadRef = useRef<FileUpload>(null);
-    const [post, setPost] = useState<Post >({
+interface FormData {
+    title: string;
+    body: string;
+    image: any;
+    keywords: string;
+    images: any[];
+    description: string,
+    meta_title: string,
+    meta_description: string
+    meta_keywords: string
+}
 
+export default function PostCreate({ menus }: { menus: Menu[] }) {
+    const [post, setPost] = useState<FormData>({
+        title: '',
+        body: '',
+        image: '',
+        keywords: '',
+        description: '',
+        meta_title: '',
+        meta_description: '',
+        meta_keywords: '',
+        images: [],
     });
 
-    const customBase64Uploader = async (event) => {
-        // convert file to base64 encoded
-        const file = event.files[0];
-        const reader = new FileReader();
-        let blob = await fetch(file.objectURL).then((r) => r.blob()); //blob:url
+    const [selectMenu, setMenu] = useState<Menu | null>(null);
+    const [categories, setCategories] = useState<Array<Category>>([]);
+    const [category, setCategory] = useState<Category | null>(null);
+    const [enableComments, setEnableComments] = useState(true);
+    const [publish, setPublish] = useState(true);
 
-        reader.readAsDataURL(blob);
-
-        reader.onloadend = function () {
-            const base64data = reader.result;
-        };
+    const onChangeValue = (e: any) => {
+        const { name, value } = e.target;
+        setPost((prev) => ({ ...prev, [name]: value }));
     };
 
-    const onTemplateSelect = (e: FileUploadSelectEvent) => {
-        let _totalSize = totalSize;
-        let files = e.files;
-        for (let i = 0; i < files.length; i++) {
-            _totalSize += files[i].size || 0;
+    const onSelectImage = (e: any) => {
+        if (e.files?.length) {
+            setPost((prev) => ({ ...prev, image: e.files[0] }));
         }
-        setTotalSize(_totalSize);
     };
 
-    const onTemplateRemove = (file: File, callback: Function) => {
-        setTotalSize(totalSize - file.size);
-        callback();
+    const onSelectImages = (e: any) => {
+        if (e.files?.length) {
+            setPost((prev) => ({ ...prev, images: [...prev.images, ...e.files] }));
+        }
     };
 
     const onTemplateClear = () => {
-        setTotalSize(0);
+        setPost((prev) => ({ ...prev, images: [] }));
     };
 
-
-
-    const headerTemplate = (options: FileUploadHeaderTemplateOptions) => {
-        const { className, chooseButton, cancelButton } = options;
-        const value = totalSize / 10000;
-        const formattedValue = fileUploadRef?.current?.formatSize(totalSize) || '0 B';
-
-        return (
-            <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
-                {chooseButton}
-                {cancelButton}
-                <div className="flex align-items-center gap-3 ml-auto">
-                    <span>{formattedValue} / 20 MB</span>
-                    <ProgressBar value={value} showValue={false} style={{ width: '10rem', height: '12px' }} />
-                </div>
-            </div>
-        );
+    const onChangeMenu = (e: any) => {
+        const value = e.target.value;
+        setMenu(value);
+        setCategories(value.categories || []);
+        setCategory(null);
     };
 
-    const itemTemplate = (inFile: object, props: ItemTemplateOptions) => {
-        const file = inFile as File;
-        return (
-            <div className="flex align-items-center flex-wrap">
-                <div className="flex align-items-center" style={{ width: '40%' }}>
-                    {/* @ts-ignore */}
-                    <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
-                    <span className="flex flex-column text-left ml-3">
-                        {file.name}
-                        <small>{new Date().toLocaleDateString()}</small>
-                    </span>
-                </div>
-                <Tag value={props.formatSize} severity="warning" className="px-3 py-2" />
-                <Button
-                    type="button"
-                    icon="pi pi-times"
-                    className="p-button-outlined p-button-rounded p-button-danger ml-auto"
-                    onClick={() => onTemplateRemove(file, props.onRemove)}
-                />
-            </div>
-        );
+    const fnCreatePost = (e: React.FormEvent) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('image', post.image);
+        formData.append('title', post.title);
+        formData.append('body', post.body);
+        formData.append('keywords', post.keywords);
+        formData.append('meta_title', post.meta_title)
+        formData.append('meta_keywords', post.meta_keywords)
+        formData.append('meta_description', post.meta_description)
+        formData.append('description', post.description)
+
+        if (selectMenu?.id) formData.append('menu_id', String(selectMenu.id));
+        if (category?.id) formData.append('category_id', String(category.id));
+        if (enableComments) formData.append('enabled_comment', '1');
+        if (publish) formData.append('status', 'published');
+
+        post.images.forEach((img, i) => {
+            formData.append(`images[${i}]`, img);
+        });
+
+        router.post('/posts', formData);
     };
-
-    const emptyTemplate = () => (
-        <div className="flex align-items-center flex-column">
-            <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
-            <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5 flex justify-center">
-                Drag and Drop Image Here
-            </span>
-        </div>
-    );
-
-    const chooseOptions = { icon: 'pi pi-fw pi-images', iconOnly: true, className: 'custom-choose-btn p-button-rounded p-button-outlined' };
-    const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Posts" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <Toast ref={toast} />
-                <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
-                <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
-                <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
+            <Head title="Create Post" />
 
-                <form>
-                    <div className="flex flex-col gap-4">
-                        {/* Title */}
-                        <div className={'flex flex-col gap-4'}>
-                            <label htmlFor="title">Title</label>
-                            <InputText id="title" aria-describedby="title-help" />
+            <div className="w-full bg-gray-50">
+                <div className="max-w-5xl mx-auto px-4 py-8 space-y-4">
+                <h1 className="text-2xl font-semibold mb-6">Create a new post</h1>
+
+                <form onSubmit={fnCreatePost} className="space-y-10">
+
+                    {/* Details */}
+                    <Card title="Details" subTitle="Title, short description, image..." className="bg-white shadow rounded-xl ">
+                        <hr/>
+                        <br/>
+                        <div className="space-y-4 gap-4 mb-6">
+                            <FloatLabel>
+                                <InputText id={'title'} name="title" value={post.title} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="title">Title</label>
+                            </FloatLabel>
+
                         </div>
-                        <div>
-                            <FileUpload mode="basic" accept="image/*" auto chooseLabel="Primary Image"></FileUpload>
+                        <div className={'mb-4'}>
+                            <FloatLabel>
+                                <InputTextarea id={'desc'} name={'description'} value={post.description} onChange={onChangeValue}
+                                               placeholder="Description" className="w-full" />
+                                <label htmlFor="desc">Description</label>
+                            </FloatLabel>
+                        </div>
+                        {/*<InputText name="keywords" value={post.keywords} onChange={onChangeValue} placeholder="Short description" className="w-full" />*/}
+
+                        <span className={''}>Content</span>
+                        <Editor
+                            value={post.body}
+                            onTextChange={(e) => setPost((prev) => ({ ...prev, body: e.htmlValue || '' }))}
+                            style={{ height: '300px' }}
+                        />
+                    </Card>
+
+
+                    <Card title="Cover" className="bg-white shadow rounded-xl space-y-4">
+                        <FileUpload
+                            mode="basic"
+                            name="image"
+                            accept="image/*"
+                            maxFileSize={2000000}
+                            customUpload
+                            auto={false}
+                            chooseLabel="Select file"
+                            onSelect={onSelectImage}
+                            className="w-full"
+                        />
+                        {post.image && <p className="text-sm text-green-600">Selected: {post.image.name}</p>}
+                    </Card>
+
+                    {/* Properties */}
+                    <Card title={'Properties'} subTitle={'Additional functions and attributes...'}
+                          className="bg-white shadow rounded-xl space-y-6">
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <Dropdown value={selectMenu} onChange={onChangeMenu} options={menus} optionLabel="name"
+                                      placeholder="Select menu" className="w-full" />
+                            {categories.length > 0 && (
+                                <Dropdown value={category} onChange={(e) => setCategory(e.target.value)}
+                                          options={categories} optionLabel="name" placeholder="Select category"
+                                          className="w-full" />
+                            )}
                         </div>
 
-                        <div>
-                            <label htmlFor="content">Content</label>
-                            <Editor value={text} onTextChange={(e) => setText(e.htmlValue)} style={{ height: '320px' }} />
+                        <div className="flex flex-col gap-8 mb-4">
+                            <FloatLabel>
+                                <InputText id={'meta_title'} name="meta_title" value={post.meta_title} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_title">Meta Title</label>
+                            </FloatLabel>
+
+                            <FloatLabel>
+                                <InputTextarea id={'meta_description'} name="meta_description" value={post.meta_description} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_description">Meta Description</label>
+                            </FloatLabel>
+
+                            <FloatLabel>
+                                <InputText id={'meta_keywords'} name="meta_keywords" value={post.meta_description} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_keywords">Meta Keywords</label>
+                            </FloatLabel>
                         </div>
 
-                        <div>
-                            <FileUpload
-                                ref={fileUploadRef}
-                                name="demo[]"
-                                url="/api/upload"
-                                multiple
-                                accept="image/*"
-                                maxFileSize={20000000}
-                                onSelect={onTemplateSelect}
-                                onError={onTemplateClear}
-                                onClear={onTemplateClear}
-                                headerTemplate={headerTemplate}
-                                itemTemplate={itemTemplate}
-                                emptyTemplate={emptyTemplate}
-                                chooseOptions={chooseOptions}
-                                cancelOptions={cancelOptions}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <ToggleButton
+                                checked={enableComments}
+                                onChange={(e) => setEnableComments(e.value)}
+                                onLabel="Comments enabled"
+                                offLabel="Comments disabled"
+                                className="w-full"
+                            />
+                            <ToggleButton
+                                checked={publish}
+                                onChange={(e) => setPublish(e.value)}
+                                onLabel="Publish"
+                                offLabel="Draft"
+                                className="w-full"
                             />
                         </div>
+                    </Card>
 
-                        <div className={'flex flex-col gap-4'}>
-                            <label htmlFor="keywords">Keywords</label>
-                            <InputText id="keywords" aria-describedby="keywords-help" />
-                        </div>
+                    {/* Gallery Upload */}
+                    <Card title={'Gallery'} className="bg-white shadow rounded-xl space-y-4">
+                        <FileUpload
+                            name="images[]"
+                            multiple
+                            accept="image/*"
+                            maxFileSize={2000000}
+                            mode="advanced"
+                            customUpload
+                            uploadLabel="Done"
+                            chooseLabel="Browse"
+                            cancelLabel="Clear"
+                            onSelect={onSelectImages}
+                            onClear={onTemplateClear}
+                            emptyTemplate={<p className="m-0">Drag and drop images here or click to select.</p>}
+                        />
+                        {post.images.length > 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {post.images.map((img, index) => (
+                                    <div key={index} className="border rounded overflow-hidden">
+                                        <img src={URL.createObjectURL(img)} alt={`Preview ${index}`} className="w-full h-32 object-cover" />
+                                        <span className="block text-center text-xs truncate p-1">{img.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </Card>
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-end gap-3">
+                        <Button type="submit" label="Create Post" className="bg-indigo-600 border-none" />
                     </div>
-
-                    <div className={'mt-4'}>
-                        <Button type={'submit'} >Add Post</Button>
-                    </div>
-
                 </form>
+            </div>
             </div>
         </AppLayout>
     );

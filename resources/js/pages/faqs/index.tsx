@@ -17,156 +17,154 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Faqs({faqs}: {faqs: FAQ[]}) {
-    const [isOpen, setIsOpen] = useState(false)
-    const [isOpenDeleteModel, setIsOpenDeleteModel] = useState(false)
+export default function Faqs({ faqs }: { faqs: FAQ[] }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [isOpenDeleteModel, setIsOpenDeleteModel] = useState(false);
     const [faq, setFaq] = useState<FAQ>({
         id: null,
-        question : '',
+        question: '',
         answer: '',
         created_at: '',
         updated_at: ''
-    })
-    //
+    });
+
+    const resetForm = () => {
+        setFaq({
+            id: null,
+            question: '',
+            answer: '',
+            created_at: '',
+            updated_at: ''
+        });
+    };
+
     const fnCreateFaq = () => {
         router.post('/faqs', {
             question: faq.question,
             answer: faq.answer,
         }, {
             onSuccess: () => {
-                setIsOpen(false)
-                setFaq({
-                    id: null,
-                    question : '',
-                    answer: '',
-                    created_at: '',
-                    updated_at: ''
-                });
+                setIsOpen(false);
+                resetForm();
             }
-        })
-    }
+        });
+    };
 
     const fnUpdateFaq = () => {
-        if ('id' in faq) {
-            router.put(`/faqs/${faq?.id}`,{
-                question: faq.question,
-                answer: faq.answer,
-            }, {
-                onSuccess: () => {
-                    setIsOpen(false);
-                    setFaq({
-                        id: null,
-                        question : '',
-                        answer: '',
-                        created_at: '',
-                        updated_at: ''
-                    });
-                }
-            });
-        }
-    }
-    //
+        if (!faq.id) return;
+
+        router.put(`/faqs/${faq.id}`, {
+            question: faq.question,
+            answer: faq.answer,
+        }, {
+            onSuccess: () => {
+                setIsOpen(false);
+                resetForm();
+            }
+        });
+    };
+
     const fnDeleteFaq = () => {
-        if ('id' in faq) {
-            router.delete(`/faqs/${faq?.id}`, {
-                onSuccess: () => {
-                    setIsOpenDeleteModel(false);
-                    setFaq({
-                        id: null,
-                        question : '',
-                        answer: '',
-                        created_at: '',
-                        updated_at: ''
-                    });
-                }
-            });
-        }
-    }
+        if (!faq.id) return;
 
-    const actionGroup = (field: any) => {
-        const updateM = () => {
-            setFaq(field)
-            setIsOpen(true)
-        }
+        router.delete(`/faqs/${faq.id}`, {
+            onSuccess: () => {
+                setIsOpenDeleteModel(false);
+                resetForm();
+            }
+        });
+    };
 
-        const deleteModel = () => {
-            setFaq(field)
-            setIsOpenDeleteModel(true)
-        }
+    const openEditDialog = (item: FAQ) => {
+        setFaq(item);
+        setIsOpen(true);
+    };
 
-        return (<>
-            <div className={'flex gap-2'}>
-                <Button size={'small'} severity="info" icon="pi pi-pencil" onClick={updateM} />
-                <Button size={'small'} severity="danger" icon="pi pi-trash" onClick={deleteModel} />
-            </div>
-        </>)
-    }
+    const openDeleteDialog = (item: FAQ) => {
+        setFaq(item);
+        setIsOpenDeleteModel(true);
+    };
+
+    const actionGroup = (item: FAQ) => (
+        <div className="flex gap-2">
+            <Button size="small" icon="pi pi-pencil" severity="info" onClick={() => openEditDialog(item)} />
+            <Button size="small" icon="pi pi-trash" severity="danger" onClick={() => openDeleteDialog(item)} />
+        </div>
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="FAQs" />
+
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className="">
-                    <div className="flex w-full justify-end">
-                        <Button size={'small'} onClick={() => setIsOpen(true)}>FAQs +</Button>
-                    </div>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">FAQ Management</h2>
+                    <Button icon="pi pi-plus" label="Add FAQ" className="p-button-sm" onClick={() => setIsOpen(true)} />
                 </div>
-                <div className="">
-                    <DataTable value={faqs} tableStyle={{ minWidth: '50rem' }}>
-                        <Column field="question" header="Question" sortable style={{ width: '30%' }}></Column>
-                        <Column field="answer" header="Answer" sortable style={{ width: '75%' }}></Column>
-                        <Column body={actionGroup} header="Action" style={{ width: '20%' }}></Column>
-                    </DataTable>
-                </div>
+
+                <DataTable value={faqs} stripedRows responsiveLayout="scroll" tableStyle={{ minWidth: '60rem' }}>
+                    <Column field="question" header="Question" style={{ width: '35%' }} />
+                    <Column field="answer" header="Answer" style={{ width: '55%' }} />
+                    <Column body={actionGroup} header="Actions" style={{ width: '10%' }} />
+                </DataTable>
             </div>
 
-            <div className="card flex justify-content-center">
-                <Dialog header="Create FAQs" visible={isOpen} style={{ width: '50vw' }} onHide={() => {
-                    if (!isOpen) return;
+            {/* Create / Edit Dialog */}
+            <Dialog
+                header={faq.id ? 'Edit FAQ' : 'Create FAQ'}
+                visible={isOpen}
+                style={{ width: '50vw' }}
+                className="p-fluid"
+                onHide={() => {
                     setIsOpen(false);
-                }}>
-                    <div className={'flex flex-col gap-4'}>
-                        <div className="w-full mb-4">
-                            <InputText
-                                value={faq.question}
-                                onChange={(e) => setFaq(item => ({ ...item, question: e.target.value }))}
-                                className={'w-full'}
-                                placeholder="Question" />
-                        </div>
-                        <div className="w-full mb-4">
-                            <InputTextarea
-                                value={faq.answer}
-                                rows={4}
-                                onChange={(e) => setFaq(item => ({ ...item, answer: e.target.value }))}
-                                className={'w-full'}
-                                placeholder="Answer" />
-                        </div>
-                    </div>
+                    resetForm();
+                }}
+            >
+                <div className="flex flex-col gap-4 mb-4">
+                    <InputText
+                        value={faq.question}
+                        onChange={(e) => setFaq(prev => ({ ...prev, question: e.target.value }))}
+                        placeholder="Enter your question"
+                        className="w-full"
+                    />
 
-                    <div className="flex justify-start gap-4 items-start">
-                        <Button size={'small'} severity="danger" onClick={() => setIsOpen(false)}>Cancel</Button>
-                        <Button size={'small'}
-                                onClick={() => 'id' in faq && faq?.id ? fnUpdateFaq() : fnCreateFaq()}>Save</Button>
-                    </div>
-                </Dialog>
+                    <InputTextarea
+                        rows={5}
+                        value={faq.answer}
+                        onChange={(e) => setFaq(prev => ({ ...prev, answer: e.target.value }))}
+                        placeholder="Enter the answer"
+                        className="w-full"
+                    />
+                </div>
 
-                <Dialog header="Delete Menu" visible={isOpenDeleteModel} style={{ width: '20vw' }} onHide={() => {
-                    if (!isOpenDeleteModel) return;
-                    setIsOpen(false);
-                }}>
-                    <div className={'flex flex-col gap-4'}>
-                        <div className="w-full mb-4">
-                            <p>Are you sure you want to delete menu?</p>
-                        </div>
-                    </div>
+                <div className="flex justify-end gap-2">
+                    <Button label="Cancel" severity="secondary" size="small" onClick={() => setIsOpen(false)} />
+                    <Button
+                        label="Save"
+                        icon="pi pi-check"
+                        size="small"
+                        onClick={() => faq?.id ? fnUpdateFaq() : fnCreateFaq()}
+                    />
+                </div>
+            </Dialog>
 
-                    <div className="flex justify-start gap-4 items-start">
-                        <Button size={'small'} onClick={() => setIsOpenDeleteModel(false)}>Cancel</Button>
-                        <Button size={'small'} severity="danger" onClick={() => fnDeleteFaq()}>Save</Button>
-                    </div>
-                </Dialog>
-            </div>
+            {/* Delete Dialog */}
+            <Dialog
+                header="Delete FAQ"
+                visible={isOpenDeleteModel}
+                style={{ width: '30vw' }}
+                onHide={() => setIsOpenDeleteModel(false)}
+            >
+                <div className="text-sm text-gray-700 mb-4">
+                    Are you sure you want to delete this FAQ?
+                    <p className="mt-2 italic text-gray-500">"{faq.question}"</p>
+                </div>
 
+                <div className="flex justify-end gap-2">
+                    <Button label="Cancel" severity="secondary" size="small" onClick={() => setIsOpenDeleteModel(false)} />
+                    <Button label="Delete" icon="pi pi-trash" severity="danger" size="small" onClick={fnDeleteFaq} />
+                </div>
+            </Dialog>
         </AppLayout>
     );
 }

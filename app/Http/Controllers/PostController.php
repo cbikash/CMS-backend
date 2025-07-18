@@ -46,7 +46,7 @@ class PostController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return Inertia::render('posts/create1', [
+        return Inertia::render('posts/create', [
             'menus' => $menus,
         ]);
     }

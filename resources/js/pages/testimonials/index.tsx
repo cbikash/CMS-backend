@@ -122,7 +122,7 @@ export default function Testimonials({ testimonials }: {testimonials: Testimonia
     const fnImage = (field: any) => {
         return (
             <div className={'flex gap-2'}>
-               <Image src={`/uploads/${field.image}`} preview={true} className={'w-24 h-24'} />
+               <Image src={field.image ? `/uploads/${field.image}` : '/placeholder.png'} preview={true} className={'w-24 h-24'} />
             </div>
         )
     }
@@ -131,10 +131,10 @@ export default function Testimonials({ testimonials }: {testimonials: Testimonia
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className="">
-                    <div className="flex justify-end">
-                        <Button size={'small'} onClick={() => setIsOpen(true)}>Testimonial +</Button>
-                    </div>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Testimonials Management</h2>
+                    <Button icon="pi pi-plus" label="Add Testimonial" className="p-button-sm"
+                            onClick={() => setIsOpen(true)} />
                 </div>
                 <div className="">
                     <DataTable value={testimonials} tableStyle={{ minWidth: '50rem' }}>
@@ -142,7 +142,8 @@ export default function Testimonials({ testimonials }: {testimonials: Testimonia
                         <Column field="name" header="Name" sortable style={{ width: '25%' }}></Column>
                         <Column field="designation" header="Designation" sortable style={{ width: '25%' }}></Column>
                         <Column field="source" header="Source" sortable style={{ width: '25%' }}></Column>
-                        <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt" sortable style={{ width: '25%' }}></Column>
+                        <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt"
+                                sortable style={{ width: '25%' }}></Column>
                         <Column body={actionGroup} header="Action" style={{ width: '25%' }}></Column>
                     </DataTable>
                 </div>

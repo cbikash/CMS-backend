@@ -13,7 +13,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-
 interface Subscriber{
     email: string,
     created_at: string,

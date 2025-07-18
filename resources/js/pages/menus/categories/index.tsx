@@ -86,26 +86,29 @@ export default function MenusCategories({menu, categories}: {menu: Menu, categor
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`${menu.name} Categories`} />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className="">
-                    <div className="flex justify-end">
-                        <Button size={'small'} onClick={() => setIsOpen(true)}>Category +</Button>
-                    </div>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Categories of {menu.name}</h2>
+                    <Button icon="pi pi-plus" label="Add Category" className="p-button-sm"
+                            onClick={() => setIsOpen(true)} />
                 </div>
                 <div className="">
                     <DataTable value={categories} tableStyle={{ minWidth: '50rem' }}>
                         <Column field="name" header="Name" sortable style={{ width: '25%' }}></Column>
-                        <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt" sortable style={{ width: '25%' }}></Column>
-                        <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated" sortable style={{ width: '25%' }}></Column>
+                        <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt"
+                                sortable style={{ width: '25%' }}></Column>
+                        <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated"
+                                sortable style={{ width: '25%' }}></Column>
                         <Column body={actionGroup} header="Action" style={{ width: '25%' }}></Column>
                     </DataTable>
                 </div>
             </div>
 
             <div className="card flex justify-content-center">
-                <Dialog header={`Create ${menu.name} Category`} visible={isOpen} style={{ width: '50vw' }} onHide={() => {
-                    if (!isOpen) return;
-                    setIsOpen(false);
-                }}>
+                <Dialog header={`Create ${menu.name} Category`} visible={isOpen} style={{ width: '50vw' }}
+                        onHide={() => {
+                            if (!isOpen) return;
+                            setIsOpen(false);
+                        }}>
                     <div className={'flex flex-col gap-4'}>
                         <div className="w-full mb-4">
                             <InputText

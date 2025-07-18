@@ -96,7 +96,7 @@ export default function Contacts({ contacts }: { contacts: Contact[] }) {
     const fnImage = (field: any) => {
         return (
             <div className={'flex gap-2'}>
-                <Image src={`/uploads/${field.image}`} preview={true} className={'w-24 h-24'} />
+                <Image  src={field.image ? `/uploads/${field.image}` : '/placeholder.png'} preview={true} className={'w-24 h-24'} />
             </div>
         )
     }
@@ -105,28 +105,34 @@ export default function Contacts({ contacts }: { contacts: Contact[] }) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Contacts" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-                <div className="flex justify-end">
-                    <Button size="small" onClick={() => setIsOpen(true)}>Add Contact +</Button>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Contact List</h2>
+                    <Button icon="pi pi-plus" label="Add Contact" className="p-button-sm" onClick={() => setIsOpen(true)} />
                 </div>
-                <DataTable value={contacts} tableStyle={{ minWidth: '50rem' }}>
-                    <Column field="image" body={fnImage} header="Image" sortable />
+
+                <DataTable value={contacts} tableStyle={{ minWidth: '50rem' }} stripedRows responsiveLayout="scroll">
+                    <Column field="image" body={fnImage} header="Image" sortable style={{ width: '120px' }} />
                     <Column field="name" header="Name" sortable />
                     <Column field="email" header="Email" sortable />
                     <Column field="phone" header="Phone" sortable />
                     <Column field="created_at" header="Created At" body={(c) => dateFormat(c.created_at)} sortable />
                     <Column field="updated_at" header="Updated At" body={(c) => dateFormat(c.updated_at)} sortable />
-                    <Column body={actionGroup} header="Action" />
+                    <Column body={actionGroup} header="Action" style={{ width: '120px' }} />
                 </DataTable>
             </div>
 
-            {/* Create/Edit Dialog */}
+            {/* Create/Edit Contact Dialog */}
             <Dialog
-                header={contact?.id ? 'Edit Contact' : 'Create Contact'}
+                header={contact?.id ? 'Edit Contact' : 'Create New Contact'}
                 visible={isOpen}
-                style={{ width: '50vw' }}
-                onHide={() => setIsOpen(false)}
+                style={{ width: '60vw', maxWidth: '700px' }}
+                className="p-fluid"
+                onHide={() => {
+                    setIsOpen(false);
+                    setContact({});
+                }}
             >
-                <div className="w-full mb-8">
+                <div className="mb-6">
                     <FileUpload
                         mode="basic"
                         name="image"
@@ -134,74 +140,67 @@ export default function Contacts({ contacts }: { contacts: Contact[] }) {
                         maxFileSize={2000000}
                         customUpload
                         auto={false}
-                        chooseLabel="Choose Profile"
+                        chooseLabel="Upload Profile Image"
                         onSelect={(e) => setContact(prev => ({ ...prev, image: e.files[0] }))}
                         className="w-full"
                     />
                 </div>
 
-                <div className="flex flex-row gap-4 mb-8">
-                    <FloatLabel className="w-full">
-                        <InputText id="name" value={contact.name || ''} onChange={(e) => setContact({ ...contact, name: e.target.value })} className="w-full" />
-                        <label htmlFor="name">Name</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-7 mb-4">
+                    <FloatLabel>
+                        <InputText id="name" value={contact.name || ''} onChange={(e) => setContact({ ...contact, name: e.target.value })} />
+                        <label htmlFor="name">Full Name</label>
                     </FloatLabel>
-                    <FloatLabel className="w-full">
-                        <InputText id="email" value={contact.email || ''} onChange={(e) => setContact({ ...contact, email: e.target.value })} className="w-full" />
-                        <label htmlFor="email">Email</label>
+                    <FloatLabel>
+                        <InputText id="email" value={contact.email || ''} onChange={(e) => setContact({ ...contact, email: e.target.value })} />
+                        <label htmlFor="email">Email Address</label>
                     </FloatLabel>
-                </div>
 
-                <div className="flex flex-row gap-4 mb-8">
-                    <FloatLabel className="w-full">
-                        <InputText id="phone" value={contact.phone || ''} onChange={(e) => setContact({ ...contact, phone: e.target.value })} className="w-full" />
-                        <label htmlFor="phone">Phone</label>
+                    <FloatLabel>
+                        <InputText id="phone" value={contact.phone || ''} onChange={(e) => setContact({ ...contact, phone: e.target.value })} />
+                        <label htmlFor="phone">Phone Number</label>
                     </FloatLabel>
-                    <FloatLabel className="w-full">
-                        <InputText id="designation" value={contact.designation || ''} onChange={(e) => setContact({ ...contact, designation: e.target.value })} className="w-full" />
+                    <FloatLabel>
+                        <InputText id="designation" value={contact.designation || ''} onChange={(e) => setContact({ ...contact, designation: e.target.value })} />
                         <label htmlFor="designation">Designation</label>
                     </FloatLabel>
-                </div>
 
-                <div className="flex flex-row gap-4 mb-8">
-                    <FloatLabel className="w-full">
-                        <InputText id="facebook" value={contact.facebook || ''} onChange={(e) => setContact({ ...contact, facebook: e.target.value })} className="w-full" />
-                        <label htmlFor="facebook">Facebook</label>
+                    <FloatLabel>
+                        <InputText id="facebook" value={contact.facebook || ''} onChange={(e) => setContact({ ...contact, facebook: e.target.value })} />
+                        <label htmlFor="facebook">Facebook URL</label>
                     </FloatLabel>
-                    <FloatLabel className="w-full">
-                        <InputText id="instagram" value={contact.instagram || ''} onChange={(e) => setContact({ ...contact, instagram: e.target.value })} className="w-full" />
-                        <label htmlFor="instagram">Instagram</label>
+                    <FloatLabel>
+                        <InputText id="instagram" value={contact.instagram || ''} onChange={(e) => setContact({ ...contact, instagram: e.target.value })} />
+                        <label htmlFor="instagram">Instagram URL</label>
                     </FloatLabel>
-                </div>
 
-                <div className="flex flex-row gap-4 mb-8">
-                    <FloatLabel className="w-full">
-                        <InputText id="twitter" value={contact.twitter || ''} onChange={(e) => setContact({ ...contact, twitter: e.target.value })} className="w-full" />
-                        <label htmlFor="twitter">Twitter</label>
+                    <FloatLabel>
+                        <InputText id="twitter" value={contact.twitter || ''} onChange={(e) => setContact({ ...contact, twitter: e.target.value })} />
+                        <label htmlFor="twitter">Twitter URL</label>
                     </FloatLabel>
-                    <FloatLabel className="w-full">
-                        <InputText id="linkedin" value={contact.linkedin || ''} onChange={(e) => setContact({ ...contact, linkedin: e.target.value })} className="w-full" />
-                        <label htmlFor="linkedin">LinkedIn</label>
+                    <FloatLabel>
+                        <InputText id="linkedin" value={contact.linkedin || ''} onChange={(e) => setContact({ ...contact, linkedin: e.target.value })} />
+                        <label htmlFor="linkedin">LinkedIn URL</label>
                     </FloatLabel>
                 </div>
 
-                <div className="flex justify-start gap-4 mt-8">
-                    <Button size="small" severity="danger" onClick={() => setIsOpen(false)}>Cancel</Button>
-                    <Button size="small" onClick={() => contact?.id ? handleUpdate() : handleCreate()}>Save</Button>
+                <div className="flex justify-end gap-4 mt-6">
+                    <Button label="Cancel" severity="secondary" size="small" onClick={() => setIsOpen(false)} />
+                    <Button label="Save Contact" icon="pi pi-check" size="small" onClick={() => contact?.id ? handleUpdate() : handleCreate()} />
                 </div>
             </Dialog>
 
-
-            {/* Delete Dialog */}
-            <Dialog header="Delete Contact" visible={isOpenDeleteModel} style={{ width: '20vw' }}
-                    onHide={() => setIsOpenDeleteModel(false)}>
-                <div className="mb-4">
-                    <p>Are you sure you want to delete this contact?</p>
+            {/* Delete Confirmation Dialog */}
+            <Dialog header="Confirm Delete" visible={isOpenDeleteModel} style={{ width: '30vw' }} onHide={() => setIsOpenDeleteModel(false)}>
+                <div className="mb-4 text-sm text-gray-700">
+                    Are you sure you want to delete <strong>{contact.name}</strong>?
                 </div>
-                <div className="flex justify-start gap-4">
-                    <Button size="small" onClick={() => setIsOpenDeleteModel(false)}>Cancel</Button>
-                    <Button size="small" severity="danger" onClick={handleDelete}>Delete</Button>
+                <div className="flex justify-end gap-2">
+                    <Button label="Cancel" severity="secondary" size="small" onClick={() => setIsOpenDeleteModel(false)} />
+                    <Button label="Delete" icon="pi pi-trash" severity="danger" size="small" onClick={handleDelete} />
                 </div>
             </Dialog>
         </AppLayout>
     );
+
 }
