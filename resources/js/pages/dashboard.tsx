@@ -51,6 +51,12 @@ const radarData = [
     { subject: 'History', A: 65, B: 85, fullMark: 150 },
 ];
 
+const renderEmptyState = (message) => (
+    <div className="flex items-center justify-center h-[250px] text-gray-500 dark:text-gray-400">
+        {message}
+    </div>
+);
+
 export default function Dashboard(props) {
     const user = props.auth.user
     return (
@@ -70,36 +76,73 @@ export default function Dashboard(props) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <StatCard title="Weekly Sales" value="714k" trend="+2.6%" color="blue" icon={<LineChart />} />
-                    <StatCard title="New Users" value="1.35m" trend="-0.1%" color="purple" icon={<UserPlus />} />
+                    {props.stats.user &&
+                        <StatCard title="New Users" value={props.stats.user.value} trend={props.stats.user.trend} color="purple" icon={<UserPlus />} />
+                    }
                     <StatCard title="Purchase Orders" value="1.72m" trend="+2.8%" color="yellow" icon={<ShoppingCart />} />
-                    <StatCard title="Messages" value="234" trend="+3.6%" color="pink" icon={<Mail />} />
+                    {props.stats.message &&
+                        <StatCard title="Messages" value={props.stats.message.value} trend={`${props.stats.message.trend}`} color="pink" icon={<Mail />} />
+                    }
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <Card title="Current Visits">
-                        <ResponsiveContainer width="100%" height={250}>
-                            <PieChart>
-                                <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={80} label>
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </Card>
+                    {props.pieData.length > 0 ? (
+                        <Card title="Current Visits">
+                            <ResponsiveContainer width="100%" height={250}>
+                                <PieChart>
+                                    <Pie
+                                        data={props.pieData}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        outerRadius={80}
+                                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                                        labelLine={true}
+                                    >
+                                        {props.pieData.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={COLORS[index % COLORS.length]}
+                                            />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip formatter={(value, name) => [value, name]} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </Card>
+                    ) : (
+                        renderEmptyState('No visit data available.')
+                    )}
+
 
                     <Card title="Website Visits">
-                        <ResponsiveContainer width="100%" height={250}>
-                            <BarChart data={barData}>
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="TeamA" fill="#8884d8" />
-                                <Bar dataKey="TeamB" fill="#82ca9d" />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {props.barData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={250}>
+                                <BarChart data={props.barData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <XAxis
+                                        dataKey="name"
+                                        tick={{ fill: '#4B5563' }}
+                                        axisLine={{ stroke: '#4B5563' }}
+                                    />
+                                    <YAxis
+                                        tick={{ fill: '#4B5563' }}
+                                        axisLine={{ stroke: '#4B5563' }}
+                                    />
+                                    <Tooltip
+                                        formatter={(value, name) => [value, name]}
+                                        labelFormatter={(label) => `Date: ${label}`}
+                                    />
+                                    <Legend
+                                        formatter={(value) => (
+                                            <span className="text-gray-800 dark:text-gray-200">{value}</span>
+                                        )}
+                                    />
+                                    <Bar dataKey="TeamA" fill="#8884d8" name="Chrome" />
+                                    <Bar dataKey="TeamB" fill="#82ca9d" name="Others" />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            renderEmptyState('No website visit data available.')
+                        )}
                     </Card>
                 </div>
 

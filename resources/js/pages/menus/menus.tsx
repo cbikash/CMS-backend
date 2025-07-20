@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {Menu } from '@/types/menus';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
@@ -14,6 +14,7 @@ import { SelectButton } from 'primereact/selectbutton';
 import { Tag } from 'primereact/tag';
 import { Blocks } from 'lucide-react';
 import { Tooltip } from 'primereact/tooltip';
+import { Chip } from 'primereact/chip';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -112,6 +113,7 @@ export default function Menus({menus}: {menus: Menu[]}) {
         )
     }
 
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -126,7 +128,7 @@ export default function Menus({menus}: {menus: Menu[]}) {
                         <Column field="url" header="URL" sortable style={{ width: '25%' }}></Column>
                         <Column field="is_visible" body={fnIsVisible} header="Visiable" sortable
                                 style={{ width: '25%' }}></Column>
-                        <Column field="type" header="Type" sortable style={{ width: '25%' }}></Column>
+                        <Column field="type" header="Type" body={(field) => <Chip  label={field.type} />} sortable style={{ width: '25%' }}></Column>
                         <Column field="created_at" body={(field) => dateFormat(field.created_at)} header="createdAt"
                                 sortable style={{ width: '25%' }}></Column>
                         <Column field="updated_at" body={(field) => dateFormat(field.updated_at)} header="Updated"

@@ -3,7 +3,9 @@
 namespace App\Http\Middleware;
 
 use App\Models\Token;
+use App\Models\Visitor;
 use Closure;
+use hisorange\BrowserDetect\Parser as Browser;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,5 +37,21 @@ class PublicTokenVerificationMiddeware
         $request->headers->set('organization_id', $token->organization_id);
 
         return $next($request);
+    }
+
+    public function terminate(Request $request, Response $response)
+    {
+        $ip = $request->ip();
+        $geo = geoip($ip);
+
+        Visitor::create([
+            'ip_address' => $ip,
+            'country' => $geo->country,
+            'city' => $geo->city,
+            'browser' =>  Browser::browserFamily(),
+            'device' => Browser::deviceFamily(),
+            'page_visited' => $request->getPathInfo(),
+            'referrer' => $request->server('HTTP_REFERER'),
+        ]);
     }
 }

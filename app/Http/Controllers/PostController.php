@@ -26,6 +26,7 @@ class PostController extends Controller
     {
         $posts = Post::query()
             ->where('organization_id', auth()->user()->organization_id)
+            ->with('category')
             ->orderBy('id', 'desc')
             ->get()
         ;

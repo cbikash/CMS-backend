@@ -97,6 +97,7 @@ export default function Posts({ posts }: { posts: Post[] }) {
                             style={{ width: '120px' }}
                         />
                         <Column field="title" header="Title" sortable style={{ minWidth: '200px' }} />
+                        <Column field="category" body={(field) => field.category.name} header="Category" sortable />
                         <Column
                             field="status"
                             header="Status"
