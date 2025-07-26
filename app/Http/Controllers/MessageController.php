@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ReplyMessage;
 use App\Models\Message;
+use App\Models\MessageReply;
+use App\Models\Organization;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -30,8 +34,9 @@ class MessageController extends Controller
      */
     public function show(Message $message)
     {
+
         return Inertia::render('messages/show', [
-            'message' => $message
+            'message' => $message->load('replies')
         ]);
     }
 
@@ -50,10 +55,28 @@ class MessageController extends Controller
         ]);
     }
 
-    public function reply(Message $message)
+    public function reply(Request $request, Message $message)
     {
-        return Inertia::render('messages/reply', [
-            'message' => $message
+        $request->validate([
+            'reply' => 'required|string|max:5000',
         ]);
+
+        MessageReply::create([
+            'body' => $request->get('reply'),
+            'sender_id' => auth()->id(),
+            'message_id' => $message->id
+        ]);
+
+        // Organization info (could be from DB or config)
+        $organization = Organization::find(auth()->user()->organization_id)->first();
+
+        // Send reply email to original sender
+        Mail::to($message->email)->send(new ReplyMessage(
+            $message->name,
+            $request->input('reply'),
+            $organization
+        ));
+
+        return back()->with('success', 'Reply sent successfully to the user.');
     }
 }

@@ -58,6 +58,7 @@ Route::middleware(['auth', 'verified'])->prefix('ajax')->group(function () {
 
     Route::post('/sliders', [SliderController::class, 'store'])->name('sliders.store');
     Route::delete('/sliders/{slider}', [SliderController::class, 'destroy'])->name('sliders.delete');
+    Route::post('/messages/{message}/reply', [MessageController::class, 'reply'])->name('messages.reply');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('ajax')->group(function () {

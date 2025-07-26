@@ -42,6 +42,16 @@ export interface Message {
     custom_field4?: string | null;
     created_at: string; // or Date if using Date objects
     updated_at: string; // or Date if using Date objects
+    replies: Reply []
+}
+
+export interface Reply {
+    id: number,
+    body: string;
+    sender_id: number;
+    message_id: number;
+    created_at: string; // or Date if using Date objects
+    updated_at: string; // or Date if using Date objects
 }
 
 

@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\MessageRequest;
+use App\Mail\ContactReplyMail;
 use App\Models\Message;
+use App\Models\Organization;
+use Illuminate\Support\Facades\Mail;
 
 class MessageController extends Controller
 {
@@ -13,11 +16,15 @@ class MessageController extends Controller
     {
         $data = $request->validated();
         $data['organization_id'] = $request->header('organization_id');
+        $organization = Organization::find($data['organization_id'])->first();
 
-        $message = Message::create($data);
+        Message::create($data);
 
-        // Dispatch the reply email to the queue
-//        Mail::to($message->email)->queue(new \App\Mail\MessageReplyMail($message));
+        Mail::to($request->get('email'))->send(new ContactReplyMail(
+            $request->get('name'),
+            $request->get('title'),
+            $organization
+        ));
 
         return $this->successResponse([], 'Message sent successfully.');
     }
