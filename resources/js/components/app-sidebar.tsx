@@ -9,7 +9,15 @@ import {
     AirVentIcon,
     Folder,
     LayoutGrid,
-    FileQuestionIcon, SubscriptIcon, MessageCircle, Building, Columns3, DiamondPercent, BookUser, LucideUsers
+    FileQuestionIcon,
+    SubscriptIcon,
+    MessageCircle,
+    Building,
+    Columns3,
+    DiamondPercent,
+    BookUser,
+    LucideUsers,
+    LockKeyhole
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -59,6 +67,11 @@ const mainNavItems: NavItem[] = [
         href: '/testimonials',
         icon: DiamondPercent,
     },
+    {
+        title: 'Roles',
+        href: '/roles',
+        icon: LockKeyhole,
+    }
 
 ];
 
