@@ -49,4 +49,11 @@ class MessageController extends Controller
             'message' => 'successfully updated message'
         ]);
     }
+
+    public function reply(Message $message)
+    {
+        return Inertia::render('messages/reply', [
+            'message' => $message
+        ]);
+    }
 }

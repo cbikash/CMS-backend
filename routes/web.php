@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('subscribers', [SubscriberController::class, 'index'])->name('subscribers.index');
     Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('messages/{message}', [MessageController::class, 'show'])->name('messages.details');
+    Route::get('messages/{message}/reply', [MessageController::class, 'reply'])->name('messages.reply');
     Route::put('messages/{message}/status', [MessageController::class, 'update'])->name('messages.status');
     Route::get('organization/profile', [OrganizationController::class, 'show']);
     Route::get('organization/token', [OrganizationController::class, 'token']);
