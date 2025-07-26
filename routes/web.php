@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::post('users', [UserController::class, 'store'])->name('users.store');
     Route::resource('roles', RoleController::class);
+    Route::post('/users/{user}/assign-role', [UserController::class, 'assign']);
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

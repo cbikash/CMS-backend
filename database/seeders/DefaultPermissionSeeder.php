@@ -60,6 +60,13 @@ class DefaultPermissionSeeder extends Seeder
             'edit testimonial',
             'delete testimonial',
             'list testimonial',
+
+            'view organization',
+            'edit organization',
+
+            'list slider',
+            'create slider',
+            'edit slider',
         ];
 
         foreach ($permissions as $permission) {

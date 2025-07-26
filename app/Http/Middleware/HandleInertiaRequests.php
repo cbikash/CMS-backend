@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -37,11 +38,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+       $user =  User::with(['roles.permissions:id,name'])->where('id', $request->user()->id)->firstOrFail();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+                'permissions' => $user?->roles?->first()?->permissions?->pluck('name')?->toArray(),
             ],
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),

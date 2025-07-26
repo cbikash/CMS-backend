@@ -8,7 +8,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
 import { PrimeReactProvider } from 'primereact/api';
-
+import { PermissionProvider } from '@/context/permissionContext';
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -16,7 +16,13 @@ createInertiaApp({
     resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
     setup({ el, App, props }) {
         const root = createRoot(el);
-        const App1 = <PrimeReactProvider><App {...props} /> </PrimeReactProvider>
+        const permissions = props.initialPage.props.auth?.permissions || [];
+        const App1 =
+            <PrimeReactProvider>
+                <PermissionProvider permissions={permissions}>
+                    <App {...props} />
+                </PermissionProvider>
+            </PrimeReactProvider>
 
         root.render(App1);
     },
