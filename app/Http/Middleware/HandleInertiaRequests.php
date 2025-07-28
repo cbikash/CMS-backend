@@ -38,7 +38,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-       $user =  User::with(['roles.permissions:id,name'])->where('id', $request->user()->id)->firstOrFail();
+       $user =  User::with(['roles.permissions:id,name'])->where('id', $request->user()?->id)->first();
 
         return [
             ...parent::share($request),

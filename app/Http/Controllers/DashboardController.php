@@ -104,7 +104,7 @@ class DashboardController extends Controller
 
         $trend = $previous30DaysCount > 0
             ? number_format((($last30DaysUniqueVisitors - $previous30DaysCount) / $previous30DaysCount) * 100, 1)
-            : ($last30DaysUniqueVisitors > 0 ? '+100.0' : '0.0');
+            : ($last30DaysUniqueVisitors > 0 ? '100.0' : '0.0');
 
         // Prefix trend with "+" for positive values
         $trend = ($trend > 0 ? '+' : '') . $trend . '%';
