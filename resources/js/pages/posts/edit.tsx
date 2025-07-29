@@ -8,7 +8,6 @@ import { Editor } from 'primereact/editor';
 import { useEffect, useState } from 'react';
 import { Category, Menu } from '@/types/menus';
 import { Dropdown } from 'primereact/dropdown';
-import { Post } from '@/types/posts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },

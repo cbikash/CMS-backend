@@ -6,7 +6,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { Editor } from 'primereact/editor';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Category, Menu } from '@/types/menus';
 import { Dropdown } from 'primereact/dropdown';
 import { ToggleButton } from 'primereact/togglebutton';
@@ -49,6 +49,8 @@ export default function PostCreate({ menus }: { menus: Menu[] }) {
     const [category, setCategory] = useState<Category | null>(null);
     const [enableComments, setEnableComments] = useState(true);
     const [publish, setPublish] = useState(true);
+
+    const quillRef = useRef<any>(null);
 
     const onChangeValue = (e: any) => {
         const { name, value } = e.target;
@@ -102,6 +104,29 @@ export default function PostCreate({ menus }: { menus: Menu[] }) {
         router.post('/posts', formData);
     };
 
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (quillRef.current) {
+                const quillInstance = quillRef.current.getQuill?.(); // safe access
+                if (quillInstance) {
+                    const toolbar = quillInstance.getModule('toolbar');
+                    toolbar.addHandler('image', () => {
+                        const url = prompt('Enter image URL');
+                        if (url) {
+                            const range = quillInstance.getSelection();
+                            quillInstance.insertEmbed(range?.index || 0, 'image', url, 'user');
+                        }
+                    });
+                    clearInterval(interval); // stop checking once ready
+                }
+            }
+        }, 100); // check every 100ms
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Post" />
@@ -134,9 +159,10 @@ export default function PostCreate({ menus }: { menus: Menu[] }) {
 
                         <span className={''}>Content</span>
                         <Editor
+                            ref={quillRef}
                             value={post.body}
                             onTextChange={(e) => setPost((prev) => ({ ...prev, body: e.htmlValue || '' }))}
-                            style={{ height: '300px' }}
+                            style={{ height: '400px' }}
                         />
                     </Card>
 
@@ -182,7 +208,7 @@ export default function PostCreate({ menus }: { menus: Menu[] }) {
                             </FloatLabel>
 
                             <FloatLabel>
-                                <InputText id={'meta_keywords'} name="meta_keywords" value={post.meta_description} onChange={onChangeValue} className="w-full" />
+                                <InputText id={'meta_keywords'} name="meta_keywords" value={post.meta_keywords} onChange={onChangeValue} className="w-full" />
                                 <label htmlFor="meta_keywords">Meta Keywords</label>
                             </FloatLabel>
                         </div>

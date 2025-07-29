@@ -7,24 +7,12 @@ import { DataTable } from 'primereact/datatable';
 import { format } from 'date-fns';
 import { EditIcon, EyeIcon } from 'lucide-react';
 import { Badge } from 'primereact/badge';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Menu } from '@/types/menus';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
 ];
 
 export default function Posts({ posts }: { posts: Post[] }) {
-    const [menus, setMenus] = useState<Menu[]>([]);
-
-    useEffect(() => {
-        fetchMenus();
-    }, []);
-
-    const fetchMenus = () => {
-        axios.get('/ajax/menuNames').then(res => setMenus(res.data.data.menus));
-    };
 
     const formatDate = (date: string) => {
         if (!date) return '-';
@@ -97,7 +85,7 @@ export default function Posts({ posts }: { posts: Post[] }) {
                             style={{ width: '120px' }}
                         />
                         <Column field="title" header="Title" sortable style={{ minWidth: '200px' }} />
-                        <Column field="category" body={(field) => field.category.name} header="Category" sortable />
+                        <Column field="category" body={(field) => field?.category?.name} header="Category" sortable />
                         <Column
                             field="status"
                             header="Status"
