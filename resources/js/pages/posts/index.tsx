@@ -7,6 +7,7 @@ import { DataTable } from 'primereact/datatable';
 import { format } from 'date-fns';
 import { EditIcon, EyeIcon } from 'lucide-react';
 import { Badge } from 'primereact/badge';
+import { Button } from 'primereact/button';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
@@ -63,11 +64,12 @@ export default function Posts({ posts }: { posts: Post[] }) {
             <div className="p-4 sm:p-6 md:p-8 flex flex-col gap-6">
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Posts</h1>
-                    <Link
-                        href="/posts/create"
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium transition-all"
-                    >
-                        + New Post
+                    <Link href="/posts/create">
+                        <Button
+                            icon="pi pi-plus"
+                            label="Add Post"
+                            className="p-button-sm"
+                        />
                     </Link>
                 </div>
 
