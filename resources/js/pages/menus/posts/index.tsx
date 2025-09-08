@@ -101,7 +101,7 @@ export default function Posts({ posts, menu }: { posts: Post[], menu: Menu }) {
                             style={{ width: '10rem' }}
                         />
                         <Column field="title" header="Title" sortable style={{ minWidth: '14rem' }} />
-                        <Column field="category" body={(field) => field.category.name} header="Category" sortable />
+                        <Column field="category" body={(field) => field?.category?.name} header="Category" sortable />
                         <Column
                             field="status"
                             header="Status"

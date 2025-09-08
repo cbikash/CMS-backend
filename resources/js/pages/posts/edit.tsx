@@ -5,9 +5,13 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { Editor } from 'primereact/editor';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Category, Menu } from '@/types/menus';
 import { Dropdown } from 'primereact/dropdown';
+import { FloatLabel } from 'primereact/floatlabel';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { Card } from 'primereact/card';
+import { ToggleButton } from 'primereact/togglebutton';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/posts' },
@@ -29,6 +33,10 @@ interface FormData {
     newImages: File[];
     menu_id: string | null,
     category_id : string | null
+    description: string ,
+    meta_title: string,
+    meta_description: string,
+    meta_keywords: string
 }
 
 interface Props {
@@ -41,6 +49,10 @@ interface Props {
         images: ExistingImage[];
         category_id: string| null,
         menu_id: string | null,
+        description: string ,
+        meta_title: string,
+        meta_description: string,
+        meta_keywords: string
     };
     menus : Menu []
 }
@@ -54,12 +66,17 @@ export default function PostEdit({ post: initialPost, menus }: Props) {
         existingImages: initialPost.images || [],
         newImages: [],
         category_id: initialPost.category_id || null,
-        menu_id: initialPost.menu_id || null
+        menu_id: initialPost.menu_id || null,
+        description : initialPost.description,
+        meta_title: initialPost.meta_title,
+        meta_description: initialPost.meta_description,
+        meta_keywords: initialPost.meta_keywords
     });
 
     const [selectMenu, setMenu] = useState<Menu| null>(null);
     const [categories, setCategories] = useState<Array<Category>>([]);
     const [category, setCategory] = useState<Category| null>()
+    const quillRef = useRef<any>(null);
 
     useEffect(() => {
         if (initialPost.menu_id !== undefined) {
@@ -127,6 +144,11 @@ export default function PostEdit({ post: initialPost, menus }: Props) {
         formData.append('title', post.title);
         formData.append('body', post.body);
         formData.append('keywords', post.keywords);
+        formData.append('keywords', post.keywords);
+        formData.append('meta_title', post.meta_title)
+        formData.append('meta_keywords', post.meta_keywords)
+        formData.append('meta_description', post.meta_description)
+        formData.append('description', post.description)
 
         // If user replaced featured image with a File, append it; otherwise, send nothing (backend uses old)
         if (post.image && typeof post.image !== 'string') {
@@ -170,71 +192,55 @@ export default function PostEdit({ post: initialPost, menus }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Post" />
-            <div className="flex flex-1 w-full flex-col rounded-xl bg-white dark:bg-gray-900 p-6 shadow-md mx-auto max-w-4xl">
-                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Edit Post</h1>
+            <div className="w-full bg-gray-50">
+                <div className="max-w-5xl mx-auto px-4 py-8 space-y-4">
+                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Edit a post</h1>
 
                 <form onSubmit={fnUpdatePost} className="space-y-6">
-                    {/* Title */}
-                    <div className="flex w-full gap-4">
-                        {/* Title Input */}
-                        <div className="w-1/2">
-                            <div className="flex flex-col gap-2">
-                                <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Title <span className="text-red-500">*</span>
-                                </label>
-                                <InputText
-                                    id="title"
-                                    name="title"
-                                    value={post.title}
+
+                    <Card title="Details" subTitle="Title, short description, image..."
+                          className="bg-white shadow rounded-xl ">
+                        <hr />
+                        <br />
+                        <div className="space-y-4 gap-4 mb-6">
+                            <FloatLabel>
+                                <InputText id={'title'} name="title" value={post.title}
+                                           onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="title">Title</label>
+                            </FloatLabel>
+
+                        </div>
+                        <div className={'mb-4'}>
+                            <FloatLabel>
+                                <InputTextarea
+                                    id="description"
+                                    name="description"
+                                    value={post.description || ""}
                                     onChange={onChangeValue}
                                     className="w-full"
-                                    placeholder="Enter post title"
                                 />
-                            </div>
+                                <label htmlFor="desc">Description</label>
+                            </FloatLabel>
                         </div>
-
-                        {/* Dropdown Menu */}
-                        <div className="w-1/2">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Menu
-                                </label>
-                                <Dropdown
-                                    value={selectMenu}
-                                    onChange={onChangeMenu}
-                                    options={menus}
-                                    optionLabel="name"
-                                    placeholder="Select a menu"
-                                    className="w-full"
-                                />
-                            </div>
+                        <div className={'mb-4'}>
+                            <FloatLabel>
+                                <InputText id={'keywords'} name="keywords" value={post.keywords}
+                                           onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="desc">Keywords</label>
+                            </FloatLabel>
                         </div>
-                    </div>
+                        {/*<InputText name="keywords" value={post.keywords} onChange={onChangeValue} placeholder="Short description" className="w-full" />*/}
 
-                    <div className={'flex flex-row gap-5 w-1/2'}>
-                        {categories.length > 0 &&
-                            <div className="w-1/2">
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Category
-                                    </label>
-                                    <Dropdown
-                                        value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
-                                        options={categories}
-                                        optionLabel="name"
-                                        placeholder="Select Category"
-                                        className="w-full"
-                                    />
-                                </div>
-                            </div>
-                        }
-                    </div>
+                        <span className={''}>Content</span>
+                        <Editor
+                            ref={quillRef}
+                            value={post.body}
+                            onTextChange={(e) => setPost((prev) => ({ ...prev, body: e.htmlValue || '' }))}
+                            style={{ height: '400px' }}
+                        />
+                    </Card>
 
-                    {/* Featured Image */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Featured Image</label>
-
+                    <Card title="Cover" className="bg-white shadow rounded-xl space-y-4">
                         {post.image && typeof post.image === 'string' ? (
                             <div className="mb-3">
                                 <img
@@ -260,95 +266,103 @@ export default function PostEdit({ post: initialPost, menus }: Props) {
                         {post.image && typeof post.image !== 'string' && (
                             <p className="text-sm text-green-600 mt-1">Selected: {(post.image as File).name}</p>
                         )}
-                    </div>
+                    </Card>
 
-                    {/* Body */}
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="body" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Content
-                        </label>
-                        <Editor
-                            value={post.body}
-                            onTextChange={onEditorChange}
-                            style={{ height: '300px' }}
-                        />
-                    </div>
 
-                    {/* Keywords */}
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="keywords" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Keywords
-                        </label>
-                        <InputText
-                            id="keywords"
-                            name="keywords"
-                            value={post.keywords}
-                            onChange={onChangeValue}
-                            className="w-full"
-                            placeholder="SEO keywords (comma separated)"
-                        />
-                    </div>
+                    {/* Properties */}
+                    <Card title={'Properties'} subTitle={'Additional functions and attributes...'}
+                          className="bg-white shadow rounded-xl space-y-6">
 
-                    {/* Existing Images */}
-                    {post.existingImages.length > 0 && (
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">Existing
-                                Images</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {post.existingImages.map((img) => (
-                                    <div key={img.id} className="relative border rounded overflow-hidden">
-                                        <img
-                                            src={`/uploads/${img.name}`}
-                                            alt={img.name || `Image ${img.id}`}
-                                            className="w-full h-32 object-cover"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeExistingImage(img.id)}
-                                            className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded hover:bg-red-700"
-                                            title="Remove Image"
-                                        >
-                                            ×
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <Dropdown value={selectMenu} onChange={onChangeMenu} options={menus} optionLabel="name"
+                                      placeholder="Select menu" className="w-full" />
+                            {categories.length > 0 && (
+                                <Dropdown value={category} onChange={(e) => setCategory(e.target.value)}
+                                          options={categories} optionLabel="name" placeholder="Select category"
+                                          className="w-full" />
+                            )}
                         </div>
-                    )}
 
-                    {/* Upload New Images */}
-                    <div>
-                        <FileUpload
-                            name="new_images[]"
-                            multiple
-                            accept="image/*"
-                            maxFileSize={2000000}
-                            mode="advanced"
-                            customUpload
-                            uploadLabel="Done"
-                            chooseLabel="Browse"
-                            cancelLabel="Clear"
-                            onSelect={onSelectNewImages}
-                            onClear={onClearNewImages}
-                            emptyTemplate={<p className="m-0">Drag and drop images here or click to select.</p>}
-                        />
+                        <div className="flex flex-col gap-8 mb-4">
+                            <FloatLabel>
+                                <InputText id={'meta_title'} name="meta_title" value={post.meta_title} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_title">Meta Title</label>
+                            </FloatLabel>
 
-                        {/* New image previews */}
-                        {post.newImages.length > 0 && (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                                {post.newImages.map((img, idx) => (
-                                    <div key={idx} className="relative border rounded overflow-hidden">
-                                        <img
-                                            src={URL.createObjectURL(img)}
-                                            alt={`Preview ${idx}`}
-                                            className="w-full h-32 object-cover"
-                                        />
-                                        <span className="block text-center text-xs truncate p-1">{img.name}</span>
-                                    </div>
-                                ))}
+                            <FloatLabel>
+                                <InputTextarea id={'meta_description'} name="meta_description" value={post.meta_description} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_description">Meta Description</label>
+                            </FloatLabel>
+
+                            <FloatLabel>
+                                <InputText id={'meta_keywords'} name="meta_keywords" value={post.meta_keywords} onChange={onChangeValue} className="w-full" />
+                                <label htmlFor="meta_keywords">Meta Keywords</label>
+                            </FloatLabel>
+                        </div>
+                    </Card>
+
+                    <Card title={'Gallery'} className="bg-white shadow rounded-xl space-y-4">
+                        {/* Existing Images */}
+                        {post.existingImages.length > 0 && (
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">Existing
+                                    Images</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {post.existingImages.map((img) => (
+                                        <div key={img.id} className="relative border rounded overflow-hidden">
+                                            <img
+                                                src={`/uploads/${img.name}`}
+                                                alt={img.name || `Image ${img.id}`}
+                                                className="w-full h-32 object-cover"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeExistingImage(img.id)}
+                                                className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded hover:bg-red-700"
+                                                title="Remove Image"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
-                    </div>
+
+                        {/* Upload New Images */}
+                        <div>
+                            <FileUpload
+                                name="new_images[]"
+                                multiple
+                                accept="image/*"
+                                maxFileSize={2000000}
+                                mode="advanced"
+                                customUpload
+                                uploadLabel="Done"
+                                chooseLabel="Browse"
+                                cancelLabel="Clear"
+                                onSelect={onSelectNewImages}
+                                onClear={onClearNewImages}
+                                emptyTemplate={<p className="m-0">Drag and drop images here or click to select.</p>}
+                            />
+
+                            {/* New image previews */}
+                            {post.newImages.length > 0 && (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                                    {post.newImages.map((img, idx) => (
+                                        <div key={idx} className="relative border rounded overflow-hidden">
+                                            <img
+                                                src={URL.createObjectURL(img)}
+                                                alt={`Preview ${idx}`}
+                                                className="w-full h-32 object-cover"
+                                            />
+                                            <span className="block text-center text-xs truncate p-1">{img.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </Card>
 
                     <div className="flex justify-end pt-4">
                         <Button
@@ -358,6 +372,7 @@ export default function PostEdit({ post: initialPost, menus }: Props) {
                         />
                     </div>
                 </form>
+            </div>
             </div>
         </AppLayout>
     );

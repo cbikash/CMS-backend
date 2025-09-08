@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Slider;
 use App\Models\Testimonial;
-use Illuminate\Support\Facades\Request;
+use Symfony\Component\HttpFoundation\Request;
 
 class TesimonialController extends Controller
 {

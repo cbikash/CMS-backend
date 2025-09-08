@@ -138,21 +138,31 @@ export default function PostCreate({ menus }: { menus: Menu[] }) {
                 <form onSubmit={fnCreatePost} className="space-y-10">
 
                     {/* Details */}
-                    <Card title="Details" subTitle="Title, short description, image..." className="bg-white shadow rounded-xl ">
-                        <hr/>
-                        <br/>
+                    <Card title="Details" subTitle="Title, short description, image..."
+                          className="bg-white shadow rounded-xl ">
+                        <hr />
+                        <br />
                         <div className="space-y-4 gap-4 mb-6">
                             <FloatLabel>
-                                <InputText id={'title'} name="title" value={post.title} onChange={onChangeValue} className="w-full" />
+                                <InputText id={'title'} name="title" value={post.title} onChange={onChangeValue}
+                                           className="w-full" />
                                 <label htmlFor="title">Title</label>
                             </FloatLabel>
 
                         </div>
                         <div className={'mb-4'}>
                             <FloatLabel>
-                                <InputTextarea id={'desc'} name={'description'} value={post.description} onChange={onChangeValue}
+                                <InputTextarea id={'desc'} name={'description'} value={post.description}
+                                               onChange={onChangeValue}
                                                placeholder="Description" className="w-full" />
                                 <label htmlFor="desc">Description</label>
+                            </FloatLabel>
+                        </div>
+                        <div className="space-y-4 gap-4 mb-6">
+                            <FloatLabel>
+                                <InputText id={'keywords'} name="title" value={post.keywords} onChange={onChangeValue}
+                                           className="w-full" />
+                                <label htmlFor="title">Keywords</label>
                             </FloatLabel>
                         </div>
                         {/*<InputText name="keywords" value={post.keywords} onChange={onChangeValue} placeholder="Short description" className="w-full" />*/}

@@ -1,5 +1,5 @@
 import type { BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Post } from '@/types/posts';
 import { format } from 'date-fns';
@@ -94,7 +94,7 @@ export default function PostPage({ post }: { post: Post }) {
                 </div>
 
                 {/* Toggle Status */}
-                <div>
+                <div className={'flex gap-4'}>
                     <Button
                         label={post.status === 'published' ? 'Unpublish' : 'Publish'}
                         icon={post.status === 'published' ? 'pi pi-eye-slash' : 'pi pi-eye'}
@@ -103,6 +103,16 @@ export default function PostPage({ post }: { post: Post }) {
                         className="rounded-md"
                         outlined
                     />
+                    <Link href={`/posts/${post.id}/edit`}>
+                        <Button
+                            label="Edit"
+                            icon="pi pi-pencil"
+                            severity="success"
+                            link
+                            className="rounded-md"
+                            outlined
+                        />
+                    </Link>
                 </div>
 
                 {/* Featured Image */}

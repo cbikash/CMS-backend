@@ -25,7 +25,7 @@ Route::middleware('client.auth')->group(function () {
     Route::get('/sliders', SliderController::class);
     Route::get('/menus', [MenuController::class, 'index']);
     Route::get('/menus/{menu}/categories', [MenuController::class, 'menuCategories']);
-    Route::get('/menus/{menu}/posts', [MenuController::class, 'menuPosts']);
+    Route::get('/menus/{menu:url}/posts', [MenuController::class, 'menuPosts']);
     Route::get('/comments/{post}', [CommentController::class, 'index']);
     Route::post('/comments/{post}', [CommentController::class, 'store']);
 });
