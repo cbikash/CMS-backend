@@ -44,3 +44,6 @@ php artisan migrate --seed
 
 # Serve the app
 php artisan serve
+``` 
+
+![alt text](./screencapture-cms-backend-test-dashboard-2026-05-31-01_34_38.png)
